@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT" follow="true">
+            <PatternLayout disableAnsi="false"  pattern="%d{HH:mm:ss.SSS} %highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=green bold, TRACE=blue} [%style{%logger{36}}{cyan}] %L - %msg%n"/>
+        </Console>
+        <Console name="STDOUT_BANNER" target="SYSTEM_OUT" follow="true">
+            <PatternLayout disableAnsi="false"  pattern="%d{HH:mm:ss.SSS} %highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=green bold, TRACE=blue} [%style{%logger{36}}{cyan}] %L - %highlight{%msg}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=green bold, TRACE=blue}%n"/>
+        </Console>
+        <RollingFile name="FILE" fileName="./logs/gw.log" filePattern="./logs/gw-%d{yyyy-MM-dd}-%i.log">
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="GWBanner" additivity="false">
+            <AppenderRef ref="STDOUT_BANNER"/>
+            <AppenderRef ref="FILE"/>
+        </Logger>
+        <Root level="all">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
