@@ -12,10 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @Author: icebigpig
- * @Data: 2022/4/23 13:21
- * @Version 1.0
+ * Author: icebigpig
+ * Data: 2022/4/23 13:21
+ * Version 1.0
  **/
+
 public class ConsulApi {
     ConsulClient client = new ConsulClient("localhost");
 
@@ -30,34 +31,34 @@ public class ConsulApi {
     }
 
     public void getSingleKVForKey(){
-        // get single KV for key
+        // 获取密钥的单个 KV
         Response<GetValue> keyValueResponse = client.getKVValue("com.my.app.foo");
         System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
         // prints "com.my.app.foo: foo"
     }
 
     public void getPrefixKVsList(){
-        // get list of KVs for key prefix (recursive)
+        // (递归)获取键前缀的 KV 列表
         Response<List<GetValue>> keyValuesResponse = client.getKVValues("com.my");
         keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
         // prints "com.my.app.foo: foo" and "com.my.app.bar: bar"
     }
 
-    public void listKnownDatacenters(){
-        //list known datacenters
+    public void getKnownDatacenters(){
+        // 列出已知的数据中心
         Response<List<String>> response = client.getCatalogDatacenters();
         System.out.println("Datacenters: " + response.getValue());
     }
 
     public void RegisterService(){
-        // register new service
+        // 注册新服务
         NewService newService = new NewService();
         newService.setId("myapp_01");
         newService.setName("myapp");
         newService.setTags(Arrays.asList("EU-West", "EU-East"));
         newService.setPort(8080);
 
-        // register new service with associated health check
+        // 使用相关的健康检查注册新服务
         NewService.Check serviceCheck = new NewService.Check();
         serviceCheck.setScript("/usr/bin/some-check-script");
         serviceCheck.setInterval("10s");
@@ -68,14 +69,14 @@ public class ConsulApi {
 
     public void CheckServicesHealthy(){
 
-        // query for healthy services based on name (returns myapp_01 and myapp_02 if healthy)
+//        // 根据名称查询健康服务(如果健康则返回 myapp_01 和 myapp_02)
 //        HealthServicesRequest request = HealthServicesRequest.newBuilder()
 //                .setPassing(true)
 //                .setQueryParams(QueryParams.DEFAULT)
 //                .build();
 //        Response<List<HealthService>> healthyServices = client.getHealthServices("myapp", request);
 
-        // query for healthy services based on name and tag (returns myapp_01 if healthy)
+        // 根据名称和标签查询健康服务(如果健康则返回 myapp_01)
         HealthServicesRequest request = HealthServicesRequest.newBuilder()
                 .setTag("EU-West")
                 .setPassing(true)
@@ -83,5 +84,4 @@ public class ConsulApi {
                 .build();
         Response<List<HealthService>> healthyServices = client.getHealthServices("myapp", request);
     }
-
 }
