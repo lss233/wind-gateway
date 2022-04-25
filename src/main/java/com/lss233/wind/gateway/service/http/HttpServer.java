@@ -1,6 +1,5 @@
 package com.lss233.wind.gateway.service.http;
 
-import com.lss233.wind.gateway.Application;
 import com.lss233.wind.gateway.common.type.Service;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -15,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 
 @Service
-public class HttpBootstrap {
-    private final static Logger LOG = LoggerFactory.getLogger(HttpBootstrap.class);
+public class HttpServer {
+    private final static Logger LOG = LoggerFactory.getLogger(HttpServer.class);
 
     public void start() throws Exception {
         LOG.info("Loading settings...");
@@ -29,7 +28,7 @@ public class HttpBootstrap {
         bootstrap.group(boss,work)
                 .handler(new LoggingHandler(LogLevel.DEBUG))
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new HttpServerInitializer());
+                .childHandler(new HttpServerInitializer(null));
 
         ChannelFuture f = bootstrap.bind(new InetSocketAddress(80)).sync();
         LOG.info("HTTP server start up at port " + 80);

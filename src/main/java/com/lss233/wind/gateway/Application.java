@@ -1,7 +1,6 @@
 package com.lss233.wind.gateway;
 
-import com.lss233.wind.gateway.service.http.HttpBootstrap;
-import org.apache.logging.log4j.LogManager;
+import com.lss233.wind.gateway.service.http.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +15,7 @@ public class Application {
                 " ## ##\"   #    #   #  #   #         #    # ## ##\"\n" +
                 " #   #  mm#mm  #   #  \"#m##          \"mmm\" #   #\n");
         LOG.info("Loading services...");
-        HttpBootstrap bootstrap  = new HttpBootstrap();
+        HttpServer bootstrap  = new HttpServer();
         bootstrap.start();
     }
 }
