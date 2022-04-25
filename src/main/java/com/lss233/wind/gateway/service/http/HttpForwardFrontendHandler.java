@@ -1,5 +1,7 @@
 package com.lss233.wind.gateway.service.http;
 
+import com.lss233.wind.gateway.service.http.filter.PreFilter;
+import com.lss233.wind.gateway.service.http.filter.RewriteHeadersFilter;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,10 +27,9 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
             route = parseRoute(request);
         }
         if(msg instanceof HttpContent) {
-            HttpContent httpContent = (HttpContent) msg;
-            ByteBuf content = httpContent.content();
+            HttpContent content = (HttpContent) msg;
             //TODO(lss233): 转发前处理器
-
+            PreFilter filter = new RewriteHeadersFilter();
             if(client == null) {
                 client = HttpClient.builder()
                         .url(route.getUri())
@@ -36,25 +37,15 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
                 client.getChannel().pipeline().addLast(new HttpForwardBackendHandler(ctx, request, route, client));
                 request.headers().set("Host", "www.lss233.com");
                 request.headers().add("X-Request-Provided-by", "Wind-Gateway 1.0");
+                request = (HttpRequest) filter.onClientMessage(request);
                 client.getChannel().writeAndFlush(request);
             }
+            content = (HttpContent) filter.onClientMessage(content);
             client.getChannel().writeAndFlush(content);
             if (msg instanceof LastHttpContent) {
-
+                // TODO(lss233): 客户端发送了最后一条消息
             }
         }
-//        // 获取请求的uri
-//        String uri = req.uri();
-//        String msg = "<html><head><title>test</title></head><body>你请求uri为：" + uri + "</body></html>";
-//        // 找到对应的 Route
-//        HttpRoute route = parseRoute(req);
-//
-////        client.getChannel().pipeline().addLast(new HttpTransferHandler(ctx, req, route, client));
-//        HttpRequest request = req.copy();
-//        ctx.writeAndFlush(request);
-//        client.getChannel().writeAndFlush(request);
-//        // 将html write到客户端
-////        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 
     // TODO

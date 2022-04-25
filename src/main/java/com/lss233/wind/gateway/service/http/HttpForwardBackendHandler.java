@@ -20,12 +20,13 @@ public class HttpForwardBackendHandler extends SimpleChannelInboundHandler<HttpO
     protected void channelRead0(ChannelHandlerContext ctxServerSide, HttpObject msg) throws Exception {
         if(msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
+            // TODO: 转发后处理器
             ctxClientSide.channel().writeAndFlush(response);
         }
         if(msg instanceof HttpContent) {
             HttpContent content = (HttpContent) msg;
             ctxClientSide.channel().writeAndFlush(content.copy());
-
+            // TODO: 转发后处理器
             if(msg instanceof LastHttpContent) {
                 ctxServerSide.close();
             }
