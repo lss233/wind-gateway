@@ -1,5 +1,7 @@
 package com.lss233.wind.gateway.service.http;
 
+import com.lss233.wind.gateway.common.Scheme;
+import com.lss233.wind.gateway.common.Upstream;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -8,37 +10,32 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class HttpClient {
+    private static final Logger LOG = LoggerFactory.getLogger(HttpClient.class);
     private SslContext sslCtx = null;
     private final EventLoopGroup group;
     private final Bootstrap bootstrap;
-    private final URI uri;
-    private String host;
-    private int port;
+    private final Upstream upstream;
+    private final Upstream.Destination destination;
+    private final Scheme scheme;
     private Channel channel = null;
 
     private HttpClient(Builder builder) throws URISyntaxException, SSLException, InterruptedException {
-        this.uri = builder.uri;
-        String scheme = uri.getScheme() == null? "http" : uri.getScheme();
-        String host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
-        int port = uri.getPort();
-        if (port == -1) {
-            if ("http".equalsIgnoreCase(scheme)) {
-                port = 80;
-            } else if ("https".equalsIgnoreCase(scheme)) {
-                port = 443;
-            }
-        }
-        if ("http".equalsIgnoreCase(scheme)) {
-            sslCtx = null;
-        } else if ("https".equalsIgnoreCase(scheme)) {
+        this.upstream = builder.upstream;
+        scheme = upstream.getScheme();
+        destination = upstream.chooseDestination();
+        if(upstream.getScheme() instanceof HttpsScheme) {
             sslCtx = SslContextBuilder.forClient()
                     .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+        } else {
+            sslCtx = null;
         }
 
         group = new NioEventLoopGroup();
@@ -48,7 +45,9 @@ public class HttpClient {
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new HttpClientInitializer(sslCtx));
-        channel = bootstrap.connect(host, port).sync().channel();
+        LOG.debug("Connecting to upstream {}:{}", destination.getHost(), destination.getPort());
+        channel = bootstrap.connect(destination.getHost(), destination.getPort()).sync().channel();
+        LOG.debug("Connection started");
     }
 
     public static Builder builder() {
@@ -66,16 +65,17 @@ public class HttpClient {
         return channel;
     }
     public static class Builder {
-        private URI uri;
+        private Upstream upstream;
         private Builder() {
             // Hide constructor
         }
-        public Builder url(URI uri) {
-            this.uri = uri;
-            return this;
-        }
         public HttpClient build() throws SSLException, URISyntaxException, InterruptedException {
             return new HttpClient(this);
+        }
+
+        public Builder upstream(Upstream upstream) {
+            this.upstream = upstream;
+            return this;
         }
     }
 }
