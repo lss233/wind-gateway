@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.http;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.common.lb.RandomLoadBalancer;
+import com.lss233.wind.gateway.service.http.filter.FlowLimitFilter;
 import com.lss233.wind.gateway.service.http.filter.PreHttpFilter;
 import com.lss233.wind.gateway.service.http.filter.RewriteHeadersFilter;
 import io.netty.buffer.Unpooled;
@@ -79,14 +80,9 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
     // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
         List<Upstream.Destination> endpoints = new ArrayList<>();
-        endpoints.add(new Upstream.Destination("104.27.200.69", 443, 1, true));
-        endpoints.add(new Upstream.Destination("172.67.60.78", 443, 2, true));
-        endpoints.add(new Upstream.Destination("104.25.140.153", 443, 2, true));
-        endpoints.add(new Upstream.Destination("104.27.192.65", 443, 2, true));
-        endpoints.add(new Upstream.Destination("172.67.62.214", 443, 2, true));
-        endpoints.add(new Upstream.Destination("104.27.207.5", 443, 2, true));
-        endpoints.add(new Upstream.Destination("172.67.54.193", 443, 2, true));
-        endpoints.add(new Upstream.Destination("104.22.66.8", 443, 2, true));
+        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
 
         Upstream upstream = new Upstream();
         upstream.setName("test upstream");
@@ -96,7 +92,7 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         upstream.setLoadBalancerClass(RandomLoadBalancer.class);
 
         HttpRoute route = new HttpRoute();
-        route.setFilters(Collections.singletonList(new RewriteHeadersFilter()));
+        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
         route.setName("test");
         route.setPublish(true);
         route.setUpstream(upstream);
