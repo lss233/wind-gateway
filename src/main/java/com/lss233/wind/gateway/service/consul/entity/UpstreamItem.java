@@ -16,6 +16,7 @@ public class UpstreamItem {
 
     boolean online;
 
+
     public String getHost() {
         return host;
     }
