@@ -7,9 +7,16 @@ import com.ecwid.consul.v1.agent.model.NewService;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lss233.wind.gateway.common.Upstream;
+import com.lss233.wind.gateway.service.consul.entity.UpstreamItem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+
 
 /**
  * Author: icebigpig
@@ -18,16 +25,17 @@ import java.util.List;
  **/
 
 public class ConsulApi {
-    ConsulClient client = new ConsulClient("localhost");
+    ConsulClient client = new ConsulClient("localhost",8500);
 
     public void setKV(){
         // set KV
+
+        // JSON.toJSONString(listOfEntity);实现序列化
+
         byte[] binaryData = new byte[] {1,2,3,4,5,6,7};
         client.setKVBinaryValue("someKey", binaryData);
         client.setKVValue("com.my.app.foo", "foo");
-        client.setKVValue("com.my.app.bar", "bar");
-        client.setKVValue("com.your.app.foo", "hello");
-        client.setKVValue("com.your.app.bar", "world");
+
     }
 
     public void getSingleKVForKey(){
@@ -83,5 +91,41 @@ public class ConsulApi {
                 .setQueryParams(QueryParams.DEFAULT)
                 .build();
         Response<List<HealthService>> healthyServices = client.getHealthServices("myapp", request);
+        System.out.println(healthyServices);
     }
+
+    public static void main(String[] args) throws JsonProcessingException {
+        ConsulApi consulApi = new ConsulApi();
+
+//        consulApi.getPrefixKVsList();
+
+        consulApi.CheckServicesHealthy();
+
+        consulApi.getKnownDatacenters();
+
+
+        UpstreamItem upstreamItem1 = new UpstreamItem("123",123,123,true);
+        UpstreamItem upstreamItem2 = new UpstreamItem("123",13,12,true);
+        List<UpstreamItem> upstreamItemList = new ArrayList<>();
+        upstreamItemList.add(upstreamItem1);
+        upstreamItemList.add(upstreamItem2);
+
+        //序列化
+        ObjectMapper mapper = new ObjectMapper();
+        String str = mapper.writeValueAsString(upstreamItemList);
+
+        System.out.println(str);
+
+        ObjectMapper mapper1 = new ObjectMapper();
+
+        // json 转数组对象
+
+
+        UpstreamItem[] person2 = mapper1.readValue(str,UpstreamItem[].class);
+        for(UpstreamItem person1:person2)
+            System.out.println(person1);
+
+    }
+
 }
+
