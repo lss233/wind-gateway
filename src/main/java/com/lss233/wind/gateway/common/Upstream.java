@@ -202,4 +202,7 @@ public class Upstream {
     public Destination chooseDestination() {
         return getLoadBalancer().getLoadBalance();
     }
+
+    public Upstream() {
+    }
 }
