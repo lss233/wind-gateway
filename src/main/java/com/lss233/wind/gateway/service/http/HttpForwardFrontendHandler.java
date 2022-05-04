@@ -93,7 +93,7 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         upstream.setConnectTimeout(5000);
         upstream.setEndpoints(endpoints);
         upstream.setScheme(new HttpsScheme());
-        upstream.setLoadBalancerClass(RandomLoadBalancer.class);
+        upstream.SetLoadBalancerClass(RandomLoadBalancer.class);
 
         HttpRoute route = new HttpRoute();
         route.setFilters(Collections.singletonList(new RewriteHeadersFilter()));

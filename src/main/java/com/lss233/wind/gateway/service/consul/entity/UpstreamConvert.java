@@ -1,14 +1,14 @@
-package com.lss233.wind.gateway.common;
+package com.lss233.wind.gateway.service.consul.entity;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import com.lss233.wind.gateway.common.Scheme;
+import com.lss233.wind.gateway.common.Upstream;
+
 import java.util.*;
 
-
 /**
- * 定义一个上游服务
+ * 上游服务反序列化实体类转换类
  */
-public class Upstream {
+public class UpstreamConvert {
     /**
      * 名称，唯一，用于标识服务。
      */
@@ -20,7 +20,7 @@ public class Upstream {
     /**
      * 节点列表
      */
-    protected List<Destination> endpoints;
+    protected List<Upstream.Destination> endpoints;
     /**
      * 重试次数，0为不重试
      */
@@ -48,9 +48,6 @@ public class Upstream {
     /**
      * 负载均衡算法
      */
-    protected Class<? extends LoadBalancer> loadBalancerClass;
-
-    private transient LoadBalancer loadBalancer;
 
 
     public static class Destination {
@@ -128,11 +125,11 @@ public class Upstream {
         this.description = description;
     }
 
-    public List<Destination> getEndpoints() {
+    public List<Upstream.Destination> getEndpoints() {
         return endpoints;
     }
 
-    public void setEndpoints(List<Destination> endpoints) {
+    public void setEndpoints(List<Upstream.Destination> endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -184,41 +181,6 @@ public class Upstream {
         this.scheme = scheme;
     }
 
-    public Class<? extends LoadBalancer> getLoadBalancerClass() {
-        return loadBalancerClass;
-    }
-
-    /**
-     * 由于反序列化必须使用标准的get set，所以需要添加方法，请勿使用
-     * @param loadBalancer
-     */
-    public void setLoadBalancer(LoadBalancer loadBalancer) {
-        this.loadBalancer = loadBalancer;
-    }
-
-    /**
-     * 由于反序列化必须使用标准的get set，所以需要添加方法，请勿使用
-     * @param loadBalancerClass
-     */
-    public void setLoadBalancerClass(Class<? extends LoadBalancer> loadBalancerClass) {
-        this.loadBalancerClass = loadBalancerClass;
-    }
-
-    public void SetLoadBalancerClass(Class<? extends LoadBalancer> loadBalancerClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.loadBalancerClass = loadBalancerClass;
-        Constructor<? extends LoadBalancer> constructor = this.loadBalancerClass.getConstructor(List.class);
-        constructor.setAccessible(true);
-        this.loadBalancer = constructor.newInstance(getEndpoints());
-    }
-
-    private LoadBalancer getLoadBalancer() {
-        return loadBalancer;
-    }
-
-    public Destination chooseDestination() {
-        return getLoadBalancer().getLoadBalance();
-    }
-
-    public Upstream() {
+    public UpstreamConvert() {
     }
 }
