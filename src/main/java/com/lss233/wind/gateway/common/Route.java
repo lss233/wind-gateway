@@ -62,4 +62,8 @@ public class Route {
     public void setUpstream(Upstream upstream) {
         this.upstream = upstream;
     }
+
+    public Route() {
+    }
+
 }

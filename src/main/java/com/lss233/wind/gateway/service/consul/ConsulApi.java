@@ -8,8 +8,8 @@ import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 
-import java.util.Arrays;
 import java.util.List;
+
 
 /**
  * Author: icebigpig
@@ -18,70 +18,128 @@ import java.util.List;
  **/
 
 public class ConsulApi {
-    ConsulClient client = new ConsulClient("localhost");
 
-    public void setKV(){
+    ConsulClient client = new ConsulClient("127.0.0.1",8500);
+    // TODO 这里需要将配置信息从本地文件读取，在本地文件里配置Yaml文件进行加载配置
+
+    /**
+     * 添加KV数值
+     * @return Response<Boolean>
+     */
+    public Response<Boolean> setKVValue(String key,String value){
         // set KV
-        byte[] binaryData = new byte[] {1,2,3,4,5,6,7};
-        client.setKVBinaryValue("someKey", binaryData);
-        client.setKVValue("com.my.app.foo", "foo");
-        client.setKVValue("com.my.app.bar", "bar");
-        client.setKVValue("com.your.app.foo", "hello");
-        client.setKVValue("com.your.app.bar", "world");
+        return client.setKVValue(key, value);
     }
 
-    public void getSingleKVForKey(){
+    /**
+     * 获取密钥的单个 KV (根据key获取value)
+     * @param  Key
+     * @return Response<GetValue>
+     */
+    public String getSingleKVForKey(String Key){
         // 获取密钥的单个 KV
-        Response<GetValue> keyValueResponse = client.getKVValue("com.my.app.foo");
+        Response<GetValue> keyValueResponse = client.getKVValue(Key);
+        // TODO 这里测试格式使用，上线后注释掉
         System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
         // prints "com.my.app.foo: foo"
+        return keyValueResponse.getValue().getDecodedValue();
     }
 
-    public void getPrefixKVsList(){
+    /**
+     * 删除 key 对应的数值
+     * @param key
+     * @return Response<Void>
+     */
+    public Response<Void> deleteKVValues(String key) {
+        return client.deleteKVValues(key);
+    }
+
+    /**
+     * (递归)获取键前缀的 KV 列表 (根据key获取value,类似搜索功能，返回前缀所有符合条件的列表)
+     * @param keyPrefix
+     * @return Response<List<GetValue>>
+     */
+    public Response<List<GetValue>> getPrefixKVsList(String keyPrefix){
         // (递归)获取键前缀的 KV 列表
-        Response<List<GetValue>> keyValuesResponse = client.getKVValues("com.my");
+        Response<List<GetValue>> keyValuesResponse = client.getKVValues(keyPrefix);
+        // TODO 这里测试格式使用，上线后注释掉
         keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
         // prints "com.my.app.foo: foo" and "com.my.app.bar: bar"
+        return keyValuesResponse;
     }
 
-    public void getKnownDatacenters(){
+
+    /**
+     * 列出已知的数据中心
+     * @return Response<List<String>>
+     */
+    public Response<List<String>> getKnownDatacenters(){
         // 列出已知的数据中心
         Response<List<String>> response = client.getCatalogDatacenters();
+        // TODO 这里测试格式使用，上线后注释掉
         System.out.println("Datacenters: " + response.getValue());
+        return response;
     }
 
-    public void RegisterService(){
+    /**
+     * 注册新服务
+     */
+    public void RegisterService(NewService newService){
         // 注册新服务
-        NewService newService = new NewService();
-        newService.setId("myapp_01");
-        newService.setName("myapp");
-        newService.setTags(Arrays.asList("EU-West", "EU-East"));
-        newService.setPort(8080);
-
-        // 使用相关的健康检查注册新服务
-        NewService.Check serviceCheck = new NewService.Check();
-        serviceCheck.setScript("/usr/bin/some-check-script");
-        serviceCheck.setInterval("10s");
-        newService.setCheck(serviceCheck);
-
+        /*
+            使用样例
+            NewService newServiceDemo = new NewService();
+            newServiceDemo.setId("myapp_01");
+            newServiceDemo.setName("myapp");
+            newServiceDemo.setTags(Arrays.asList("EU-West", "EU-East"));
+            newServiceDemo.setPort(8080);
+         */
+        /*
+            使用相关的健康检查注册新服务
+            NewService.Check serviceCheck = new NewService.Check();
+            serviceCheck.setScript("/usr/bin/some-check-script");
+            serviceCheck.setInterval("10s");
+            newService.setCheck(serviceCheck);
+        */
         client.agentServiceRegister(newService);
     }
 
-    public void CheckServicesHealthy(){
+    /**
+     * 根据名称查询健康服务
+     * @param serviceName
+     * @return Response<List<HealthService>>
+     */
+    public Response<List<HealthService>> CheckServicesHealthy(String serviceName){
 
-//        // 根据名称查询健康服务(如果健康则返回 myapp_01 和 myapp_02)
-//        HealthServicesRequest request = HealthServicesRequest.newBuilder()
-//                .setPassing(true)
-//                .setQueryParams(QueryParams.DEFAULT)
-//                .build();
-//        Response<List<HealthService>> healthyServices = client.getHealthServices("myapp", request);
-
-        // 根据名称和标签查询健康服务(如果健康则返回 myapp_01)
+        // 根据名称查询健康服务(如果健康则返回 myapp_01 和 myapp_02)
         HealthServicesRequest request = HealthServicesRequest.newBuilder()
-                .setTag("EU-West")
                 .setPassing(true)
                 .setQueryParams(QueryParams.DEFAULT)
                 .build();
-        Response<List<HealthService>> healthyServices = client.getHealthServices("myapp", request);
+        Response<List<HealthService>> healthyServices = client.getHealthServices(serviceName, request);
+        // TODO 这里测试格式使用，上线后注释掉
+        healthyServices.getValue().forEach(value -> System.out.println(value.toString()));
+        return healthyServices;
+        /*
+            根据名称和标签查询健康服务(如果健康则返回 myapp_01)
+            HealthServicesRequest request = HealthServicesRequest.newBuilder()
+                    .setTag("EU-West")
+                    .setPassing(true)
+                    .setQueryParams(QueryParams.DEFAULT)
+                    .build();
+            Response<List<HealthService>> healthyServices = client.getHealthServices("service-provider-7070", request);
+            System.out.println(healthyServices);
+         */
     }
+
+    /**
+     * 获取节点状态信息
+     * @return Response<List<String>>
+     */
+    public Response<List<String>> getStatusPeers(){
+        return client.getStatusPeers();
+    }
+
+
 }
+
