@@ -65,4 +65,8 @@ public class Route implements Serializable {
     public void setUpstream(Upstream upstream) {
         this.upstream = upstream;
     }
+
+    public Route() {
+    }
+
 }

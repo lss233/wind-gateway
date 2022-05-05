@@ -7,7 +7,6 @@ import com.ecwid.consul.v1.agent.model.NewService;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
-import com.lss233.wind.gateway.service.consul.entity.KeyValue;
 
 import java.util.List;
 
@@ -25,18 +24,11 @@ public class ConsulApi {
 
     /**
      * 添加KV数值
-     * @param keyValue
      * @return Response<Boolean>
      */
-    public Response<Boolean> setKVValue(KeyValue keyValue){
+    public Response<Boolean> setKVValue(String key,String value){
         // set KV
-
-        // TODO 加入前需要实现序列化
-        // byte[] binaryData = new byte[] {1,2,3,4,5,6,7};
-        // client.setKVBinaryValue("someKey", binaryData);
-        //这里是二进制写入KV数值
-
-        return client.setKVValue(keyValue.getKey(), keyValue.getValue());
+        return client.setKVValue(key, value);
     }
 
     /**
@@ -44,13 +36,13 @@ public class ConsulApi {
      * @param  Key
      * @return Response<GetValue>
      */
-    public Response<GetValue> getSingleKVForKey(String Key){
+    public String getSingleKVForKey(String Key){
         // 获取密钥的单个 KV
         Response<GetValue> keyValueResponse = client.getKVValue(Key);
         // TODO 这里测试格式使用，上线后注释掉
         System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
         // prints "com.my.app.foo: foo"
-        return keyValueResponse;
+        return keyValueResponse.getValue().getDecodedValue();
     }
 
     /**
@@ -147,6 +139,7 @@ public class ConsulApi {
     public Response<List<String>> getStatusPeers(){
         return client.getStatusPeers();
     }
+
 
 }
 
