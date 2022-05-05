@@ -9,6 +9,7 @@ repositories {
     maven {
         url 'https://lss233.littleservice.cn/'
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -20,6 +21,10 @@ dependencies {
     implementation group: 'com.lmax', name: 'disruptor', version: '3.4.4'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
     implementation 'org.projectlombok:lombok:1.18.24'
+    implementation 'io.javalin:javalin:4.5.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha7'
+    implementation 'com.auth0:java-jwt:3.19.1'
+    implementation 'commons-codec:commons-codec:1.15'
 }
 
 test {

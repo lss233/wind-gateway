@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ConsulApi {
 
-    ConsulClient client = new ConsulClient("192.168.5.193",8500);
+    ConsulClient client = new ConsulClient("127.0.0.1",8500);
     // TODO 这里需要将配置信息从本地文件读取，在本地文件里配置Yaml文件进行加载配置
 
     /**
