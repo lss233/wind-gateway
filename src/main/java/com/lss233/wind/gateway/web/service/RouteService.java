@@ -18,5 +18,5 @@ public interface RouteService {
      * 获取路由信息
      * @param context
      */
-    void getRoute(Context context);
+    void getRoute(Context context) throws JsonProcessingException;
 }

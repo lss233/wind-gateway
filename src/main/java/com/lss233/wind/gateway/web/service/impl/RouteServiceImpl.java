@@ -6,10 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
-import com.lss233.wind.gateway.service.consul.entity.KeyValue;
+import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.web.dao.RouteConsulDao;
 import com.lss233.wind.gateway.web.service.RouteService;
 import io.javalin.http.Context;
+
+import java.util.List;
 
 /**
  * @author zzl
@@ -29,10 +31,13 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public void getRoute(Context context) {
-        String key = context.pathParam("key");
+    public void getRoute(Context context) throws JsonProcessingException {
+        String key = context.pathParam("routeKey");
         ConsulApi api = new ConsulApi();
-        Response<GetValue> route = api.getSingleKVForKey(key);
+        String route = api.getSingleKVForKey(key);
         context.json(route);
+
+        List<Route> routeList = RouteInfo.getRoute();
+
     }
 }

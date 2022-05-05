@@ -1,12 +1,6 @@
 package com.lss233.wind.gateway.web.controller;
 
-import com.ecwid.consul.v1.Response;
-import com.ecwid.consul.v1.kv.model.GetValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lss233.wind.gateway.common.Route;
-import com.lss233.wind.gateway.service.consul.ConsulApi;
-import com.lss233.wind.gateway.service.consul.entity.KeyValue;
 import com.lss233.wind.gateway.web.service.RouteService;
 import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
 import io.javalin.http.Context;
@@ -33,7 +27,7 @@ public class RouteController {
      * 查询路由信息。
      * @param context
      */
-    public static void getRoute(Context context) {
+    public static void getRoute(Context context) throws JsonProcessingException {
         routeService.getRoute(context);
     }
 }

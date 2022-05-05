@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
-import com.lss233.wind.gateway.service.consul.entity.KeyValue;
 
 /**
  * @author zzl
@@ -17,13 +16,9 @@ public class RouteConsulDao {
         //序列化
         ObjectMapper objectMapper = new ObjectMapper();
         String routeJson = objectMapper.writeValueAsString(route);
-        KeyValue keyValue = new KeyValue();
-        //将路由名写入keyValue中作为键
-        keyValue.setKey(route.getName());
-        //将整个route对象系列化后作为value写入keyValue
-        keyValue.setValue(routeJson);
+
         //将keyValue存入consul中
-        api.setKVValue(keyValue);
+        api.setKVValue(route.getName(),routeJson);
 
         return routeJson;
     }
