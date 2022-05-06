@@ -9,30 +9,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author : yjp
  * @Date : 2022/5/1 21:39
  */
 public class IpRestriction extends Filter implements PreHttpFilter{
-    private static final Logger LOG = LoggerFactory.getLogger(FlowLimitFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IpRestriction.class);
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This IP is limited.".getBytes(StandardCharsets.UTF_8)));
+    List<String> IPBlackList = new ArrayList<>();
 
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
-        if(!IpRestriction((HttpRequest)msg)) {
-            LOG.info("IP limit {}", ctx);
-            ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+        if(msg instanceof HttpRequest) {
+            HttpRequest request = (HttpRequest) msg;
+            if (!IpRestriction(request)) {
+                LOG.info("IP limit {}", ctx);
+                ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+            }
         }
     }
 
-    public static boolean IpRestriction(HttpRequest request) {
+    public boolean IpRestriction(HttpRequest request) {
         String ip = request.headers().get("LocalAddr");
-        if (ip == null || ip.equals("192.168.29.1")) {
-
+        IPBlackList.add("192.168.29.1");
+        if (ip == null || IPBlackList.contains(ip)) {
             return false;
         }
-        System.out.println(ip);
         return true;
+    }
+
+    public List IPBlackListAdd(String IP) {
+        IPBlackList.add(IP);
+        return IPBlackList;
     }
 }

@@ -9,21 +9,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author : yjp
  * @Date : 2022/5/1 22:40
  */
 public class UaRestriction extends Filter implements PreHttpFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowLimitFilter.class);
-    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Referer is limited.".getBytes(StandardCharsets.UTF_8)));
+    private static final Logger LOG = LoggerFactory.getLogger(UaRestriction.class);
+    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This User-Agent is limited.".getBytes(StandardCharsets.UTF_8)));
+    List<String> UaBlackList = new ArrayList<>();
 
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
-        if(UaRestriction((HttpRequest)msg)) {
-            LOG.info("Rate limit {} exceed!", ctx);
-            ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+        if(msg instanceof HttpRequest) {
+            HttpRequest request = (HttpRequest) msg;
+            if(!UaRestriction(request)) {
+                LOG.info("Rate limit {} exceed!", ctx);
+                ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+            }
         }
+
     }
 
     public static boolean UaRestriction (HttpRequest request) {
@@ -32,5 +39,10 @@ public class UaRestriction extends Filter implements PreHttpFilter {
             return false;
         }
         return true;
+    }
+
+    public List UaBlackListAdd(String Ua) {
+        UaBlackList.add(Ua);
+        return UaBlackList;
     }
 }

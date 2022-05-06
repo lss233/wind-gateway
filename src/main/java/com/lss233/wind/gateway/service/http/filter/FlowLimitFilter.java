@@ -5,10 +5,7 @@ import com.lss233.wind.gateway.service.http.HttpForwardFrontendHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -25,10 +22,14 @@ public class FlowLimitFilter extends Filter implements PreHttpFilter{
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.TOO_MANY_REQUESTS, Unpooled.wrappedBuffer("Too many requests.".getBytes(StandardCharsets.UTF_8)));
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
-        if(!rateLimiterByZset("1", 5, 1)) {
-            LOG.info("Rate limit {} exceed!", ctx);
-            ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+        if(msg instanceof HttpRequest) {
+            HttpRequest request = (HttpRequest) msg;
+            if(!rateLimiterByZset("1", 5, 1)) {
+                LOG.info("Rate limit {} exceed!", ctx);
+                ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+            }
         }
+
     }
 
     public static boolean rateLimiterByZset(String key,int maxCount,int timeRange){
