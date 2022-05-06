@@ -12,7 +12,7 @@ public class RewriteHeadersFilter extends Filter implements PreHttpFilter {
             HttpRequest request = (HttpRequest) msg;
             request.headers().add("X-Request-Processed-By", "RewriteHeadersFilter");
             request.headers().remove("Host");
-            request.headers().add("Host", "www.cloudflare.com");
+            request.headers().add("Host", "www.baidu.com");
         }
     }
 }
