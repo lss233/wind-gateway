@@ -1,7 +1,6 @@
 package com.lss233.wind.gateway.service.http.filter;
 
 import com.lss233.wind.gateway.common.Filter;
-import com.lss233.wind.gateway.service.http.HttpForwardFrontendHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;

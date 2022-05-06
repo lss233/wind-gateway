@@ -1,11 +1,14 @@
 package com.lss233.wind.gateway.common;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * 定义一条路由
  */
-public class Route {
+public class Route implements Serializable {
+
+    public static long serializableID = 1L;
     /**
      * 名称，唯一，用于标识路由
      */
