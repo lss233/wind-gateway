@@ -14,12 +14,12 @@ import com.lss233.wind.gateway.web.entity.User;
 public class UserConsulDao {
 
     public String storeUserToConsul(User user) throws JsonProcessingException {
+        System.out.println(user.getUsername());
         ConsulApi api = new ConsulApi();
 
         //序列化
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-
         //将keyValue存入consul中
         api.setKVValue(user.getUsername(),userJson);
         return userJson;
@@ -29,7 +29,7 @@ public class UserConsulDao {
         ConsulApi api = new ConsulApi();
         String userJson = api.getSingleKVForKey(username);
         ObjectMapper objectMapper = new ObjectMapper();
-        User user = objectMapper.readValue(userJson.toString(), User.class);
+        User user = objectMapper.readValue(userJson, User.class);
         return user;
     }
 }

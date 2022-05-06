@@ -1,9 +1,8 @@
 package com.lss233.wind.gateway.web.entity;
 
-import io.javalin.core.security.RouteRole;
-
+import javax.management.relation.Role;
 import java.io.Serializable;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,9 +13,13 @@ public class User implements Serializable {
 
     public static long serializableID = 1L;
 
-    private String username;
-    private String password;
-    private Set<RouteRole> myUrls = new LinkedHashSet<>();
+    private String username = "";
+    private String password = "";
+    private Set<AccessURL> myUrls = new HashSet<>();
+
+    public User() {
+        myUrls.add(AccessURL.ANYONE);
+    }
 
     public String getUsername() {
         return username;
@@ -34,11 +37,20 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Set<RouteRole> getMyUrls() {
+    public Set<AccessURL> getMyUrls() {
         return myUrls;
     }
 
-    public void setMyUrls(Set<RouteRole> myUrls) {
+    public void setMyUrls(Set<AccessURL> myUrls) {
         this.myUrls = myUrls;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", myUrls=" + myUrls +
+                '}';
     }
 }

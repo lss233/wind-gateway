@@ -27,7 +27,7 @@ public class RouteServiceImpl implements RouteService {
         String routeJson = routeConsulDao.storeRouteToConsul(route);
         context.result(routeJson);
         // TODO: 2022/5/5 查看测试数据，之后去掉
-        System.out.println(routeJson);
+        System.out.println("routeJson："+routeJson);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class RouteServiceImpl implements RouteService {
         String route = api.getSingleKVForKey(key);
         context.json(route);
 
-        List<Route> routeList = RouteInfo.getRoute();
+//        List<Route> routeList = RouteInfo.getRoute();
 
     }
 }

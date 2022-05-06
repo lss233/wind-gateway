@@ -9,7 +9,6 @@ import com.lss233.wind.gateway.web.entity.AccessURL;
 import com.lss233.wind.gateway.web.entity.User;
 import com.lss233.wind.gateway.web.interceptor.ApiAccessManager;
 import io.javalin.Javalin;
-import io.javalin.core.security.RouteRole;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -28,16 +27,13 @@ public class WebApplication {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword("123456");
-        Set<RouteRole> role = new LinkedHashSet<>();
-        role.add(AccessURL.ADMIN);
-        admin.setMyUrls(role);
+        admin.getMyUrls().add(AccessURL.ADMIN);
 
         ConsulApi api = new ConsulApi();
 
         //序列化
         ObjectMapper objectMapper = new ObjectMapper();
         String routeJson = objectMapper.writeValueAsString(admin);
-        //将整个route对象系列化后作为value写入keyValue
 
         //将keyValue存入consul中
         api.setKVValue(admin.getUsername(),routeJson);
@@ -48,7 +44,7 @@ public class WebApplication {
         app.routes(() -> {
             path("route", () -> {
                 post("createRoute", RouteController::createRoute, AccessURL.ADD_ROUTE, AccessURL.ADMIN);
-                get("getRoute/{key}", RouteController::getRoute, AccessURL.GET_ROUTE, AccessURL.ADMIN);
+                get("getRoute/{routeKey}", RouteController::getRoute, AccessURL.GET_ROUTE, AccessURL.ADMIN);
             });
             path("user", () -> {
                 post("register", UserController::register, AccessURL.ANYONE, AccessURL.ADMIN);
