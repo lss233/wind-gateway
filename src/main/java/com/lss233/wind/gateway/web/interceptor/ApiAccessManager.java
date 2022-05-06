@@ -45,8 +45,8 @@ public class ApiAccessManager implements AccessManager {
     @Override
     public void manage(@NotNull Handler handler, @NotNull Context context, @NotNull Set<RouteRole> permittedRoles) throws Exception {
         Set myUrls = extractRole(context);
-        //查看是否包含role
-        if (myUrls.contains(ADMIN) || Authentication.authenticate(permittedRoles, myUrls)) {
+        //查看是否包含有权限
+        if (Authentication.authenticate(permittedRoles, myUrls)) {
             handler.handle(context);
         } else {
             context.status(401).result("Unauthorized");

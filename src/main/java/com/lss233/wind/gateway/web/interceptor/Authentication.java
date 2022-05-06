@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 用于权限分级时的鉴权。
  * @author zzl
  * @date 2022/5/5 16:37
  */
