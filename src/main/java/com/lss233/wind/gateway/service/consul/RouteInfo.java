@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.consul;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
+import io.netty.util.internal.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,13 @@ public class RouteInfo {
      * @throws JsonProcessingException
      */
     public static List<Route> getRoute() throws JsonProcessingException {
-        String valueResponse = consulApi.getSingleKVForKey("routeList");
+        String valueResponse;
+        try{
+            valueResponse = consulApi.getSingleKVForKey("routeList");
+        }catch (NullPointerException e) {
+            return null;
+        }
+        System.out.println(valueResponse);
         ObjectMapper mapper = new ObjectMapper();
         // json 转数组对象
         Route[] routes = mapper.readValue(valueResponse, Route[].class);
@@ -41,6 +48,7 @@ public class RouteInfo {
         //序列化
         ObjectMapper mapper = new ObjectMapper();
         consulApi.setKVValue("routeList",mapper.writeValueAsString(routeList));
+        System.out.println("setRouteList:"+routeList);
     }
 
     public static void updateRoteList(List<Route> updateRouteList) throws JsonProcessingException {
@@ -54,10 +62,12 @@ public class RouteInfo {
      * @return
      * @throws JsonProcessingException
      */
-    public Route getRoute(String routeName) throws JsonProcessingException {
+    public static Route getRoute(String routeName) throws JsonProcessingException {
 
         List<Route> routes = RouteInfo.getRoute();
-
+        if (routes == null) {
+            return null;
+        }
         for(Route route : routes){
             if(Objects.equals(route.getName(), routeName)){
                 return route;
@@ -69,21 +79,25 @@ public class RouteInfo {
     /**
      * 通过已有路由名称修改路由，若不存在该路由名称，则进行追加路由
      */
-    public boolean setRoute(Route updateRoute) throws JsonProcessingException {
+    public static boolean setRoute(Route updateRoute) throws JsonProcessingException {
 
         // 修改前结果集
         List<Route> routeList = RouteInfo.getRoute();
+
+        if (routeList == null) {
+            routeList = new ArrayList<>();
+        }
 
         // 待更新的结果集
         List<Route> updateRouteList = new ArrayList<>();
 
         // 如果存在该路由则获取到
-        Route route = this.getRoute(updateRoute.getName());
+        Route route = getRoute(updateRoute.getName());
         if (route == null){
             // 若不存在，则进行追加
             routeList.add(updateRoute);
-
             // TODO 将原先列表数据直接返回更新
+            System.out.println("setRoute:##" + routeList);
             RouteInfo.updateRoteList(routeList);
 
         } else {
@@ -109,7 +123,7 @@ public class RouteInfo {
      * @param routeName
      * @throws JsonProcessingException
      */
-    public boolean delRoute(String routeName) throws JsonProcessingException {
+    public static boolean delRoute(String routeName) throws JsonProcessingException {
 
         // 修改前结果集
         List<Route> routeList = RouteInfo.getRoute();
@@ -117,7 +131,7 @@ public class RouteInfo {
         // 待更新的结果集
         List<Route> updateRouteList = new ArrayList<>();
 
-        Route route = this.getRoute(routeName);
+        Route route = getRoute(routeName);
         if (route == null){
             // 若不存在，返回false
             return false;
@@ -137,4 +151,21 @@ public class RouteInfo {
         }
         return true;
     }
+
+//    public static List<Route> searchRoutes(String routeName, String path) throws JsonProcessingException {
+//
+//        List<Route> routeList = getRoute();
+//        List<Route> target = new ArrayList<>();
+//
+//        for (Route route : routeList) {
+//            if (StringUtil.isNullOrEmpty(routeName) && StringUtil.isNullOrEmpty(path)) {
+//                target.add(route);
+//                continue;
+//            }else if (StringUtil.isNullOrEmpty(routeName) && path.equals(route.get)){
+//
+//            }
+//            if (route.getName())
+//
+//        }
+//    }
 }

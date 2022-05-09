@@ -43,8 +43,12 @@ public class WebApplication {
         Javalin app = Javalin.create(config -> config.accessManager(new ApiAccessManager())).start(7000);
         app.routes(() -> {
             path("route", () -> {
-                post("createRoute", RouteController::createRoute, AccessURL.ADMIN);
-                get("getRoute/{routeKey}", RouteController::getRoute, AccessURL.ADMIN);
+                post("setRoute", RouteController::setRoute, AccessURL.ADMIN);
+                put("/update", RouteController::setRoute, AccessURL.ADMIN);
+                get("getRoute/{routeName}", RouteController::getRoute, AccessURL.ADMIN);
+                get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
+                delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
+                put("/deleteRoute", RouteController::onOrOffline, AccessURL.ADMIN);
             });
             path("user", () -> {
                 post("register", UserController::register, AccessURL.ANYONE);

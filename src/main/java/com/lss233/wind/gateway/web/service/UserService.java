@@ -1,6 +1,7 @@
 package com.lss233.wind.gateway.web.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.lss233.wind.gateway.web.util.MyResult;
 import io.javalin.http.Context;
 
 /**
@@ -12,8 +13,9 @@ public interface UserService {
     /**
      * 登录
      * @param context 前端传回来的数据
+     * @return
      */
-    void login(Context context) throws JsonProcessingException;
+    MyResult login(Context context) throws JsonProcessingException;
 
     /**
      * 注册
