@@ -2,15 +2,17 @@ package com.lss233.wind.gateway.web.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lss233.wind.gateway.common.Route;
-import com.lss233.wind.gateway.service.consul.ConsulApi;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
+import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.dao.RouteConsulDao;
+import com.lss233.wind.gateway.web.entity.RouteView;
 import com.lss233.wind.gateway.web.service.RouteService;
 import com.lss233.wind.gateway.web.util.MyResult;
 import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
 import io.netty.util.internal.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,27 +21,28 @@ import java.util.List;
  */
 public class RouteServiceImpl implements RouteService {
 
-    public RouteConsulDao routeConsulDao = new RouteConsulDao();
-
     @Override
-    public MyResult<Route> setRoute(Context context) throws JsonProcessingException {
-        Route route = context.bodyAsClass(Route.class);
-        System.out.println(route.getDescription());
-        if (route == null) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(),"route不可为null", null);
+    public MyResult<RouteView> setRoute(Context context) throws JsonProcessingException {
+        RouteView routeView = context.bodyAsClass(RouteView.class);
+        if (routeView == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(),"routeView不可为null", routeView);
         }
+        Route route = routeView.getRoute();
+        HttpRoute httpRoute = routeView.getHttpRoute();
         if (!RouteInfo.setRoute(route)) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由设置失败", route);
-        }else {
-            return MyResult.success(route);
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由设置失败", routeView);
         }
+        if (!RouteInfo.setHttpRoute(route.getName(), httpRoute)) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由主机和路径设置失败", routeView);
+        }
+        return MyResult.success(routeView);
     }
 
     @Override
-    public MyResult<Route> getRoute(Context context) throws JsonProcessingException {
+    public MyResult<RouteView> getRoute(Context context) throws JsonProcessingException {
+        RouteView routeView = new RouteView();
         String routeName = context.pathParam("routeName");
         System.out.println("12345679:"+routeName);
-        ConsulApi api = new ConsulApi();
         List<Route> routes = RouteInfo.getRoute();
         Route target = null;
         if (routes == null) {
@@ -54,16 +57,27 @@ public class RouteServiceImpl implements RouteService {
         if (target == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        return MyResult.success(target);
+        routeView.setRoute(target);
+        HttpRoute httpRoute = RouteInfo.getHttpRoute(target.getName());
+        routeView.setHttpRoute(httpRoute);
+        return MyResult.success(routeView);
     }
 
     @Override
-    public MyResult<List<Route>> getAllRoutes(Context context) throws JsonProcessingException {
+    public MyResult<List<RouteView>> getAllRoutes(Context context) throws JsonProcessingException {
         List<Route> routes = RouteInfo.getRoute();
+        List<RouteView> routeViews = new ArrayList<>();
         if (routes.isEmpty()) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        return MyResult.success(routes);
+        RouteView routeView = new RouteView();
+        for (Route route : routes) {
+            routeView.setRoute(route);
+            HttpRoute httpRoute = RouteInfo.getHttpRoute(route.getName());
+            routeView.setHttpRoute(httpRoute);
+            routeViews.add(routeView);
+        }
+        return MyResult.success(routeViews);
     }
 
     @Override
@@ -73,7 +87,10 @@ public class RouteServiceImpl implements RouteService {
         }
         boolean isDel = RouteInfo.delRoute(routeName);
         if (!isDel){
-            return MyResult.fail(ResultEnum.ERROR.getCode(), "删除失败",null);
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由删除失败",null);
+        }
+        if (RouteInfo.delHttpRoute(routeName)) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(),"路由主机和路径删除失败", null);
         }
         return MyResult.success();
     }

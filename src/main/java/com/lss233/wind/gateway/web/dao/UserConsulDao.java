@@ -29,7 +29,12 @@ public class UserConsulDao {
         ConsulApi api = new ConsulApi();
         String userJson = api.getSingleKVForKey(username);
         ObjectMapper objectMapper = new ObjectMapper();
-        User user = objectMapper.readValue(userJson, User.class);
+        User user;
+        try {
+            user = objectMapper.readValue(userJson, User.class);
+        }catch (Exception e) {
+            return null;
+        }
         return user;
     }
 }

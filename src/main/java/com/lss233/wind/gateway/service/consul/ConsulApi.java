@@ -39,10 +39,16 @@ public class ConsulApi {
     public String getSingleKVForKey(String Key){
         // 获取密钥的单个 KV
         Response<GetValue> keyValueResponse = client.getKVValue(Key);
-        // TODO 这里测试格式使用，上线后注释掉
-        System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
         // prints "com.my.app.foo: foo"
-        return keyValueResponse.getValue().getDecodedValue();
+        String value;
+        try{
+            value = keyValueResponse.getValue().getDecodedValue();
+            // TODO: 2022/5/10   这里测试格式使用，上线后注释掉
+            System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
+        }catch (NullPointerException e){
+            return null;
+        }
+        return value;
     }
 
     /**

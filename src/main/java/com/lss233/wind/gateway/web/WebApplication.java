@@ -9,9 +9,9 @@ import com.lss233.wind.gateway.web.entity.AccessURL;
 import com.lss233.wind.gateway.web.entity.User;
 import com.lss233.wind.gateway.web.interceptor.ApiAccessManager;
 import io.javalin.Javalin;
+import io.javalin.core.util.Headers;
+import io.javalin.http.Context;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -52,7 +52,7 @@ public class WebApplication {
             });
             path("user", () -> {
                 post("register", UserController::register, AccessURL.ANYONE);
-                get("login", UserController::login, AccessURL.ANYONE);
+                post("login", UserController::login, AccessURL.ANYONE);
             });
         });
     }

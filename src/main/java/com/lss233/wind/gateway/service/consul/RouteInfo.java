@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.consul;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
+import com.lss233.wind.gateway.service.http.HttpRoute;
 import io.netty.util.internal.StringUtil;
 
 import java.util.ArrayList;
@@ -148,6 +149,51 @@ public class RouteInfo {
 
             // TODO 将新的列表数据直接返回更新
             RouteInfo.updateRoteList(updateRouteList);
+        }
+        return true;
+    }
+
+    /**
+     * 存储路由的主机和路径（HttpRoute），路由名作为key进行绑定。
+     * @param routeName 绑定的路由的路由名
+     * @param httpRoute 路由主机和路径
+     * @return
+     */
+    public static boolean setHttpRoute(String routeName, HttpRoute httpRoute) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String httpRouteJson = objectMapper.writeValueAsString(httpRoute);
+            consulApi.setKVValue(routeName, httpRouteJson);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 通过路由名获取绑定的HttpRoute
+     * @param routeName 路由名
+     * @return
+     */
+    public static HttpRoute getHttpRoute(String routeName) {
+        String httpRouteJson = consulApi.getSingleKVForKey(routeName);
+        ObjectMapper objectMapper = new ObjectMapper();
+        HttpRoute httpRoute;
+        try {
+            httpRoute = objectMapper.readValue(httpRouteJson, HttpRoute.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return httpRoute;
+    }
+
+    public static boolean delHttpRoute(String routeName) {
+        try{
+            consulApi.deleteKVValues(routeName);
+        }catch (NullPointerException e) {
+            return false;
         }
         return true;
     }

@@ -24,10 +24,15 @@ public class UserServiceImp implements UserService {
     @Override
     public MyResult login(Context context) throws JsonProcessingException {
         //获取前端传过来的账号密码
-        String username = context.queryParam("username");
-        String password = context.queryParam("password");
+        String username = "$";
+        username = context.formParam("username");
+        String password = context.formParam("password");
+        System.out.println(context.formParamMap());
+        System.out.println("#####"+username + "#####" + password);
         User user = userConsulDao.getUserFromConsulByKey(username);
-        assert user!=null;
+        if (user == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "不存在该账号，请先创建。", null);
+        }
         if (user.getPassword().equals(password)) {
             Map<String, String> claims = new HashMap<>();
             claims.put("username", username);

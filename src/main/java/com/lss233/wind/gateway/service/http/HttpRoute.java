@@ -1,6 +1,9 @@
 package com.lss233.wind.gateway.service.http;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lss233.wind.gateway.common.Route;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpRoute extends Route {
 
     protected String path;
@@ -27,4 +30,7 @@ public class HttpRoute extends Route {
         this.host = host;
     }
 
+    public String getUri() {
+        return uri;
+    }
 }
