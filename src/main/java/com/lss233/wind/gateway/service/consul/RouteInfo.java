@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.http.HttpRoute;
-import io.netty.util.internal.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class RouteInfo {
      * @return List<Route>
      * @throws JsonProcessingException
      */
-    public static List<Route> getRoute() throws JsonProcessingException {
+    public static List<Route> getRoutes() throws JsonProcessingException {
         String valueResponse;
         try{
             valueResponse = consulApi.getSingleKVForKey("routeList");
@@ -65,7 +64,7 @@ public class RouteInfo {
      */
     public static Route getRoute(String routeName) throws JsonProcessingException {
 
-        List<Route> routes = RouteInfo.getRoute();
+        List<Route> routes = RouteInfo.getRoutes();
         if (routes == null) {
             return null;
         }
@@ -82,8 +81,10 @@ public class RouteInfo {
      */
     public static boolean setRoute(Route updateRoute) throws JsonProcessingException {
 
+        Boolean status;
+
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoute();
+        List<Route> routeList = RouteInfo.getRoutes();
 
         if (routeList == null) {
             routeList = new ArrayList<>();
@@ -94,14 +95,14 @@ public class RouteInfo {
 
         // 如果存在该路由则获取到
         Route route = getRoute(updateRoute.getName());
+
         if (route == null){
+            status = false;
             // 若不存在，则进行追加
             routeList.add(updateRoute);
-            // TODO 将原先列表数据直接返回更新
-            System.out.println("setRoute:##" + routeList);
             RouteInfo.updateRoteList(routeList);
-
         } else {
+            status = true;
             // 若该路由信息存在，则进行更新
             for(Route routeItem : routeList){
                 if(Objects.equals(routeItem.getName(), updateRoute.getName())){
@@ -114,7 +115,7 @@ public class RouteInfo {
             // TODO 将新的列表数据直接返回更新
             RouteInfo.updateRoteList(updateRouteList);
         }
-        return true;
+        return status;
     }
 
     /**
@@ -127,7 +128,7 @@ public class RouteInfo {
     public static boolean delRoute(String routeName) throws JsonProcessingException {
 
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoute();
+        List<Route> routeList = RouteInfo.getRoutes();
 
         // 待更新的结果集
         List<Route> updateRouteList = new ArrayList<>();
