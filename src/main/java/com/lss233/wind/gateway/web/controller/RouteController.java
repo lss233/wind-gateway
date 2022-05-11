@@ -55,7 +55,7 @@ public class RouteController {
      * @param context
      * @throws JsonProcessingException
      */
-    public static void onOrOffline(Context context) throws JsonProcessingException {
+    public static void online(Context context) throws JsonProcessingException {
         String routeName = context.formParam("routeName");
         Integer isPublish = Integer.valueOf(Objects.requireNonNull(context.formParam("isPublish")));
 

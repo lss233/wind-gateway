@@ -48,7 +48,7 @@ public class WebApplication {
                 get("getRoute/{routeName}", RouteController::getRoute, AccessURL.ADMIN);
                 get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
                 delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
-                put("/deleteRoute", RouteController::onOrOffline, AccessURL.ADMIN);
+                put("/online", RouteController::online, AccessURL.ADMIN);
             });
             path("user", () -> {
                 post("register", UserController::register, AccessURL.ANYONE);

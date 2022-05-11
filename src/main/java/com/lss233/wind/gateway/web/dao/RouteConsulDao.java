@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
+import com.lss233.wind.gateway.service.http.HttpRoute;
 
 /**
  * @author zzl
@@ -12,16 +13,16 @@ import com.lss233.wind.gateway.service.consul.RouteInfo;
  */
 public class RouteConsulDao {
 
-    public String storeRouteToConsul(Route route) throws JsonProcessingException {
-        if (route == null) {
+    public String storeRouteToConsul(HttpRoute httpRoute) throws JsonProcessingException {
+        if (httpRoute == null) {
             throw new RuntimeException("route不能为空");
         }
         //序列化
         ObjectMapper objectMapper = new ObjectMapper();
-        String routeJson = objectMapper.writeValueAsString(route);
+        String routeJson = objectMapper.writeValueAsString(httpRoute);
 
         //存入consul
-        RouteInfo.setRoute(route);
+        RouteInfo.setRoute(httpRoute);
 
         return routeJson;
     }

@@ -1,7 +1,7 @@
 package com.lss233.wind.gateway.web.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lss233.wind.gateway.web.entity.RouteView;
+import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.util.MyResult;
 import io.javalin.http.Context;
 
@@ -24,13 +24,13 @@ public interface RouteService {
      * @param context
      * @return
      */
-    MyResult<RouteView> getRoute(Context context) throws JsonProcessingException;
+    MyResult<HttpRoute> getRoute(Context context) throws JsonProcessingException;
 
     /**
      * 用于展示路由列表
      * @return
      */
-    MyResult<List<RouteView>> getAllRoutes(Context context) throws JsonProcessingException;
+    MyResult<List<HttpRoute>> getAllRoutes(Context context) throws JsonProcessingException;
 
     /**
      * 删除指定路由

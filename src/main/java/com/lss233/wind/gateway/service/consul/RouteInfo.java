@@ -2,8 +2,8 @@ package com.lss233.wind.gateway.service.consul;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.http.HttpRoute;
+import io.netty.util.internal.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,49 +22,56 @@ public class RouteInfo {
 
     /**
      * 获取存储在consul中的route列表
-     * @return List<Route>
+     * @return List<HttpRoute>
+     * @throws JsonProcessingException
      */
-    public static List<Route> getRoutes() throws JsonProcessingException {
+    public static List<HttpRoute> getRoute() throws JsonProcessingException {
         String valueResponse;
+        HttpRoute[] httpRoutes;
         try{
             valueResponse = consulApi.getSingleKVForKey("routeList");
-        }catch (NullPointerException e) {
+            System.out.println(valueResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            // json 转数组对象
+            httpRoutes = mapper.readValue(valueResponse, HttpRoute[].class);
+        }catch (Exception e) {
             return null;
         }
-        System.out.println(valueResponse);
-        ObjectMapper mapper = new ObjectMapper();
-        // json 转数组对象
-        Route[] routes = mapper.readValue(valueResponse, Route[].class);
-        return new ArrayList<>(Arrays.asList(routes));
+        return new ArrayList<>(Arrays.asList(httpRoutes));
     }
 
     /**
-     * 将List<Route> 序列化并存储到consul中
+     * 将List<HttpRoute> 序列化并存储到consul中
+     * @param routeList
+     * @throws JsonProcessingException
      */
-    public static void setRouteList(List<Route> routeList) throws JsonProcessingException {
+    public static void setRouteList(List<HttpRoute> routeList) throws JsonProcessingException {
         //序列化
         ObjectMapper mapper = new ObjectMapper();
         consulApi.setKVValue("routeList",mapper.writeValueAsString(routeList));
         System.out.println("setRouteList:"+routeList);
     }
 
-    public static void updateRoteList(List<Route> updateRouteList) throws JsonProcessingException {
+    public static void updateRoteList(List<HttpRoute> updateRouteList) throws JsonProcessingException {
         consulApi.deleteKVValues("routeList");
         RouteInfo.setRouteList(updateRouteList);
     }
 
     /**
      * 通过路由名称获取单个路由
+     * @param routeName
+     * @return
+     * @throws JsonProcessingException
      */
-    public static Route getRoute(String routeName) throws JsonProcessingException {
+    public static HttpRoute getRoute(String routeName) throws JsonProcessingException {
 
-        List<Route> routes = RouteInfo.getRoutes();
-        if (routes == null) {
+        List<HttpRoute> httpRoutes = RouteInfo.getRoute();
+        if (httpRoutes == null) {
             return null;
         }
-        for(Route route : routes){
-            if(Objects.equals(route.getName(), routeName)){
-                return route;
+        for(HttpRoute httpRoute : httpRoutes){
+            if(Objects.equals(httpRoute.getName(), routeName)){
+                return httpRoute;
             }
         }
         return null;
@@ -73,32 +80,30 @@ public class RouteInfo {
     /**
      * 通过已有路由名称修改路由，若不存在该路由名称，则进行追加路由
      */
-    public static boolean setRoute(Route updateRoute) throws JsonProcessingException {
-
-        boolean status;
+    public static boolean setRoute(HttpRoute updateRoute) throws JsonProcessingException {
 
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoutes();
+        List<HttpRoute> routeList = RouteInfo.getRoute();
 
         if (routeList == null) {
             routeList = new ArrayList<>();
         }
 
         // 待更新的结果集
-        List<Route> updateRouteList = new ArrayList<>();
+        List<HttpRoute> updateRouteList = new ArrayList<>();
 
         // 如果存在该路由则获取到
-        Route route = getRoute(updateRoute.getName());
-
-        if (route == null){
-            status = false;
+        HttpRoute httpRoute = getRoute(updateRoute.getName());
+        if (httpRoute == null){
             // 若不存在，则进行追加
             routeList.add(updateRoute);
+            // TODO 将原先列表数据直接返回更新
+            System.out.println("setRoute:##" + routeList);
             RouteInfo.updateRoteList(routeList);
+
         } else {
-            status = true;
             // 若该路由信息存在，则进行更新
-            for(Route routeItem : routeList){
+            for(HttpRoute routeItem : routeList){
                 if(Objects.equals(routeItem.getName(), updateRoute.getName())){
                     updateRouteList.add(updateRoute);
                 } else {
@@ -109,33 +114,31 @@ public class RouteInfo {
             // TODO 将新的列表数据直接返回更新
             RouteInfo.updateRoteList(updateRouteList);
         }
-        return status;
+        return true;
     }
 
     /**
      * 删除单个路由信息
      * 若返回值true则代表存在并且删除成功
      * 若返回false则表示不存在该路由信息
+     * @param routeName
+     * @throws JsonProcessingException
      */
     public static boolean delRoute(String routeName) throws JsonProcessingException {
 
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoutes();
-        if (routeList == null) {
-            // 若当前结果集为空直接结束
-            return false;
-        }
-        // 待更新的结果集
-        List<Route> updateRouteList = new ArrayList<>();
+        List<HttpRoute> routeList = RouteInfo.getRoute();
 
-        Route route = getRoute(routeName);
-        if (route == null){
+        // 待更新的结果集
+        List<HttpRoute> updateRouteList = new ArrayList<>();
+        HttpRoute httpRoute = getRoute(routeName);
+        if (httpRoute == null){
             // 若不存在，返回false
             return false;
 
         } else {
             // 若该路由信息存在，则进行更新
-            for(Route routeItem : routeList){
+            for(HttpRoute routeItem : routeList){
                 if(Objects.equals(routeItem.getName(), routeName)){
                     continue;
                 } else {
@@ -149,63 +152,4 @@ public class RouteInfo {
         return true;
     }
 
-    /**
-     * 存储路由的主机和路径（HttpRoute），路由名作为key进行绑定。
-     * @param routeName 绑定的路由的路由名
-     * @param httpRoute 路由主机和路径
-     */
-    public static boolean setHttpRoute(String routeName, HttpRoute httpRoute) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String httpRouteJson = objectMapper.writeValueAsString(httpRoute);
-            consulApi.setKVValue(routeName, httpRouteJson);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 通过路由名获取绑定的HttpRoute
-     * @param routeName 路由名
-     */
-    public static HttpRoute getHttpRoute(String routeName) {
-        String httpRouteJson = consulApi.getSingleKVForKey(routeName);
-        ObjectMapper objectMapper = new ObjectMapper();
-        HttpRoute httpRoute;
-        try {
-            httpRoute = objectMapper.readValue(httpRouteJson, HttpRoute.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return httpRoute;
-    }
-
-    public static boolean delHttpRoute(String routeName) {
-        try{
-            consulApi.deleteKVValues(routeName);
-        }catch (NullPointerException e) {
-            return false;
-        }
-        return true;
-    }
-
-//    public static List<Route> searchRoutes(String routeName, String path) throws JsonProcessingException {
-//
-//        List<Route> routeList = getRoute();
-//        List<Route> target = new ArrayList<>();
-//
-//        for (Route route : routeList) {
-//            if (StringUtil.isNullOrEmpty(routeName) && StringUtil.isNullOrEmpty(path)) {
-//                target.add(route);
-//                continue;
-//            }else if (StringUtil.isNullOrEmpty(routeName) && path.equals(route.get)){
-//
-//            }
-//            if (route.getName())
-//
-//        }
-//    }
 }

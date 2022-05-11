@@ -1,11 +1,9 @@
 package com.lss233.wind.gateway.web.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lss233.wind.gateway.common.Route;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.dao.RouteConsulDao;
-import com.lss233.wind.gateway.web.entity.RouteView;
 import com.lss233.wind.gateway.web.service.RouteService;
 import com.lss233.wind.gateway.web.util.MyResult;
 import com.lss233.wind.gateway.web.util.ResultEnum;
@@ -22,33 +20,29 @@ import java.util.List;
 public class RouteServiceImpl implements RouteService {
 
     @Override
-    public MyResult<RouteView> setRoute(Context context) throws JsonProcessingException {
-        RouteView routeView = context.bodyAsClass(RouteView.class);
-        if (routeView == null) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(),"routeView不可为null", routeView);
+    public MyResult<HttpRoute> setRoute(Context context) throws JsonProcessingException {
+        HttpRoute httpRoute = context.bodyAsClass(HttpRoute.class);
+        if (httpRoute == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(),"路由配置失败，路由信息不可为null", null);
         }
-        Route route = routeView.getRoute();
-        HttpRoute httpRoute = routeView.getHttpRoute();
-        if (!RouteInfo.setRoute(route)) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由设置失败", routeView);
+        if (!RouteInfo.setRoute(httpRoute)) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由存入consul失败", httpRoute);
         }
-        if (!RouteInfo.setHttpRoute(route.getName(), httpRoute)) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由主机和路径设置失败", routeView);
-        }
-        return MyResult.success(routeView);
+        return MyResult.success(httpRoute);
     }
 
     @Override
-    public MyResult<RouteView> getRoute(Context context) throws JsonProcessingException {
-        RouteView routeView = new RouteView();
+    public MyResult<HttpRoute> getRoute(Context context) throws JsonProcessingException {
+        HttpRoute httpRoute = new HttpRoute();
         String routeName = context.pathParam("routeName");
         System.out.println("12345679:"+routeName);
-        List<Route> routes = RouteInfo.getRoute();
-        Route target = null;
-        if (routes == null) {
+        List<HttpRoute> httpRoutes = RouteInfo.getRoute();
+        HttpRoute target = null;
+        if (httpRoutes == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND.getCode(), routeName+"未找到",null);
         }
-        for (Route route : routes) {
+        System.out.println(httpRoutes.get(0));
+        for (HttpRoute route : httpRoutes) {
             if (route.getName().equals(routeName)) {
                 target = route;
                 break;
@@ -57,27 +51,16 @@ public class RouteServiceImpl implements RouteService {
         if (target == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        routeView.setRoute(target);
-        HttpRoute httpRoute = RouteInfo.getHttpRoute(target.getName());
-        routeView.setHttpRoute(httpRoute);
-        return MyResult.success(routeView);
+        return MyResult.success(target);
     }
 
     @Override
-    public MyResult<List<RouteView>> getAllRoutes(Context context) throws JsonProcessingException {
-        List<Route> routes = RouteInfo.getRoute();
-        List<RouteView> routeViews = new ArrayList<>();
-        if (routes.isEmpty()) {
+    public MyResult<List<HttpRoute>> getAllRoutes(Context context) throws JsonProcessingException {
+        List<HttpRoute> httpRoutes = RouteInfo.getRoute();
+        if (httpRoutes == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        RouteView routeView = new RouteView();
-        for (Route route : routes) {
-            routeView.setRoute(route);
-            HttpRoute httpRoute = RouteInfo.getHttpRoute(route.getName());
-            routeView.setHttpRoute(httpRoute);
-            routeViews.add(routeView);
-        }
-        return MyResult.success(routeViews);
+        return MyResult.success(httpRoutes);
     }
 
     @Override
@@ -89,9 +72,6 @@ public class RouteServiceImpl implements RouteService {
         if (!isDel){
             return MyResult.fail(ResultEnum.ERROR.getCode(), "路由删除失败",null);
         }
-        if (RouteInfo.delHttpRoute(routeName)) {
-            return MyResult.fail(ResultEnum.ERROR.getCode(),"路由主机和路径删除失败", null);
-        }
         return MyResult.success();
     }
 
@@ -100,15 +80,16 @@ public class RouteServiceImpl implements RouteService {
         if (StringUtil.isNullOrEmpty(routeName) || isPublish == null) {
             return MyResult.fail(ResultEnum.ERROR.getCode(), "路由名和路由上下线设置均不可为空", null);
         }
-        Route route = RouteInfo.getRoute(routeName);
-        if (route == null) {
+        HttpRoute httpRoute = RouteInfo.getRoute(routeName);
+        if (httpRoute == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
         boolean flag = false;
         if (isPublish == 1) {
             flag = true;
         }
-        route.setPublish(flag);
+        httpRoute.setPublish(flag);
+        RouteInfo.setRoute(httpRoute);
         return MyResult.success();
     }
 
