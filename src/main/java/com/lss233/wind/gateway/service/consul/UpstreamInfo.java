@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.consul;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Upstream;
+import com.lss233.wind.gateway.service.consul.Utils.ConvertUtils;
 import com.lss233.wind.gateway.service.consul.entity.UpstreamConvert;
 
 import java.util.ArrayList;
@@ -33,47 +34,21 @@ public class UpstreamInfo {
         ObjectMapper mapper = new ObjectMapper();
         // json 转数组对象
         UpstreamConvert[] upstreamConverts = mapper.readValue(valueResponse, UpstreamConvert[].class);
-
         for(UpstreamConvert upstreamConvert : upstreamConverts){
-            Upstream upstream = new Upstream();
-            upstream.setName(upstreamConvert.getName());
-            upstream.setDescription(upstreamConvert.getDescription());
-            upstream.setEndpoints( upstreamConvert.getEndpoints());
-            upstream.setRetryAttempts(upstreamConvert.getRetryAttempts());
-            upstream.setRetryTimeout(upstreamConvert.getRetryTimeout());
-            upstream.setConnectTimeout(upstreamConvert.getConnectTimeout());
-            upstream.setSendTimeout(upstreamConvert.getSendTimeout());
-            upstream.setReceiveTimeout(upstreamConvert.getReceiveTimeout());
-            upstream.setScheme(upstreamConvert.getScheme());
-            upstreamList.add(upstream);
+            upstreamList.add(ConvertUtils.toConvertNormalForm(upstreamConvert));
         }
         return upstreamList;
     }
 
     /**
      * 将List<Upstream> 序列化并存储到consul中
-     * @param upstreamList
-     * @throws JsonProcessingException
      */
     public static void setUpstreamList(List<Upstream> upstreamList) throws JsonProcessingException {
         //序列化
         List<UpstreamConvert> upstreamConvertList = new ArrayList<>();
         for(Upstream upstream : upstreamList){
-            UpstreamConvert upstreamConvert = new UpstreamConvert();
-
-            upstreamConvert.setName(upstream.getName());
-            upstreamConvert.setDescription(upstream.getDescription());
-            upstreamConvert.setEndpoints( upstream.getEndpoints());
-            upstreamConvert.setRetryAttempts(upstream.getRetryAttempts());
-            upstreamConvert.setRetryTimeout(upstream.getRetryTimeout());
-            upstreamConvert.setConnectTimeout(upstream.getConnectTimeout());
-            upstreamConvert.setSendTimeout(upstream.getSendTimeout());
-            upstreamConvert.setReceiveTimeout(upstream.getReceiveTimeout());
-            upstreamConvert.setScheme(upstream.getScheme());
-
-            upstreamConvertList.add(upstreamConvert);
+            upstreamConvertList.add(ConvertUtils.toConvertStoreForm(upstream));
         }
-
         ObjectMapper mapper = new ObjectMapper();
         consulApi.setKVValue("upstreamList",mapper.writeValueAsString(upstreamConvertList));
     }
@@ -85,9 +60,6 @@ public class UpstreamInfo {
 
     /**
      * 通过上游名称获取单个上游服务信息
-     * @param upstreamName
-     * @return
-     * @throws JsonProcessingException
      */
     public static Upstream getUpstream(String upstreamName) throws JsonProcessingException {
 
@@ -108,8 +80,7 @@ public class UpstreamInfo {
      */
     public static boolean setUpstream(Upstream updateUpstream) throws JsonProcessingException {
 
-        Boolean status;
-
+        boolean status;
         // 修改前结果集
         List<Upstream> upstreamList = UpstreamInfo.getUpstreams();
 
@@ -150,13 +121,14 @@ public class UpstreamInfo {
      * 删除单个上游服务信息
      * 若返回值true则代表存在并且删除成功
      * 若返回false则表示不存在该路由信息
-     * @param upstreamName
-     * @throws JsonProcessingException
      */
     public static boolean delUpstream(String upstreamName) throws JsonProcessingException {
 
         // 修改前结果集
         List<Upstream> upstreamList = UpstreamInfo.getUpstreams();
+        if (upstreamList == null){
+            return false;
+        }
 
         // 修改后待更新的数据集合
         List<Upstream> updateUpstreamList = new ArrayList<>();

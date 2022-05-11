@@ -23,7 +23,6 @@ public class RouteInfo {
     /**
      * 获取存储在consul中的route列表
      * @return List<Route>
-     * @throws JsonProcessingException
      */
     public static List<Route> getRoutes() throws JsonProcessingException {
         String valueResponse;
@@ -41,8 +40,6 @@ public class RouteInfo {
 
     /**
      * 将List<Route> 序列化并存储到consul中
-     * @param routeList
-     * @throws JsonProcessingException
      */
     public static void setRouteList(List<Route> routeList) throws JsonProcessingException {
         //序列化
@@ -58,9 +55,6 @@ public class RouteInfo {
 
     /**
      * 通过路由名称获取单个路由
-     * @param routeName
-     * @return
-     * @throws JsonProcessingException
      */
     public static Route getRoute(String routeName) throws JsonProcessingException {
 
@@ -81,7 +75,7 @@ public class RouteInfo {
      */
     public static boolean setRoute(Route updateRoute) throws JsonProcessingException {
 
-        Boolean status;
+        boolean status;
 
         // 修改前结果集
         List<Route> routeList = RouteInfo.getRoutes();
@@ -122,14 +116,15 @@ public class RouteInfo {
      * 删除单个路由信息
      * 若返回值true则代表存在并且删除成功
      * 若返回false则表示不存在该路由信息
-     * @param routeName
-     * @throws JsonProcessingException
      */
     public static boolean delRoute(String routeName) throws JsonProcessingException {
 
         // 修改前结果集
         List<Route> routeList = RouteInfo.getRoutes();
-
+        if (routeList == null) {
+            // 若当前结果集为空直接结束
+            return false;
+        }
         // 待更新的结果集
         List<Route> updateRouteList = new ArrayList<>();
 
@@ -158,7 +153,6 @@ public class RouteInfo {
      * 存储路由的主机和路径（HttpRoute），路由名作为key进行绑定。
      * @param routeName 绑定的路由的路由名
      * @param httpRoute 路由主机和路径
-     * @return
      */
     public static boolean setHttpRoute(String routeName, HttpRoute httpRoute) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -175,7 +169,6 @@ public class RouteInfo {
     /**
      * 通过路由名获取绑定的HttpRoute
      * @param routeName 路由名
-     * @return
      */
     public static HttpRoute getHttpRoute(String routeName) {
         String httpRouteJson = consulApi.getSingleKVForKey(routeName);
