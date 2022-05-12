@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static com.lss233.wind.gateway.web.entity.AccessURL.ADMIN;
 import static com.lss233.wind.gateway.web.entity.AccessURL.ANYONE;
 import static com.lss233.wind.gateway.web.util.JavalinJWT.CONTEXT_ATTRIBUTE;
 

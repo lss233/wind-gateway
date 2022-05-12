@@ -2,7 +2,9 @@ package com.lss233.wind.gateway.service.consul;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lss233.wind.gateway.common.Route;
+import com.lss233.wind.gateway.service.http.HttpRoute;
+import io.netty.util.internal.StringUtil;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,29 +23,37 @@ public class RouteInfo {
 
     /**
      * 获取存储在consul中的route列表
-     * @return List<Route>
+     * @return List<HttpRoute>
      * @throws JsonProcessingException
      */
-    public static List<Route> getRoute() throws JsonProcessingException {
-        String valueResponse = consulApi.getSingleKVForKey("routeList");
-        ObjectMapper mapper = new ObjectMapper();
-        // json 转数组对象
-        Route[] routes = mapper.readValue(valueResponse, Route[].class);
-        return new ArrayList<>(Arrays.asList(routes));
+    public static List<HttpRoute> getRoute() throws JsonProcessingException {
+        String valueResponse;
+        HttpRoute[] httpRoutes;
+        try{
+            valueResponse = consulApi.getSingleKVForKey("routeList");
+            System.out.println(valueResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            // json 转数组对象
+            httpRoutes = mapper.readValue(valueResponse, HttpRoute[].class);
+        }catch (Exception e) {
+            return null;
+        }
+        return new ArrayList<>(Arrays.asList(httpRoutes));
     }
 
     /**
-     * 将List<Route> 序列化并存储到consul中
+     * 将List<HttpRoute> 序列化并存储到consul中
      * @param routeList
      * @throws JsonProcessingException
      */
-    public static void setRouteList(List<Route> routeList) throws JsonProcessingException {
+    public static void setRouteList(List<HttpRoute> routeList) throws JsonProcessingException {
         //序列化
         ObjectMapper mapper = new ObjectMapper();
         consulApi.setKVValue("routeList",mapper.writeValueAsString(routeList));
+        System.out.println("setRouteList:"+routeList);
     }
 
-    public static void updateRoteList(List<Route> updateRouteList) throws JsonProcessingException {
+    public static void updateRoteList(List<HttpRoute> updateRouteList) throws JsonProcessingException {
         consulApi.deleteKVValues("routeList");
         RouteInfo.setRouteList(updateRouteList);
     }
@@ -54,13 +64,15 @@ public class RouteInfo {
      * @return
      * @throws JsonProcessingException
      */
-    public Route getRoute(String routeName) throws JsonProcessingException {
+    public static HttpRoute getRoute(String routeName) throws JsonProcessingException {
 
-        List<Route> routes = RouteInfo.getRoute();
-
-        for(Route route : routes){
-            if(Objects.equals(route.getName(), routeName)){
-                return route;
+        List<HttpRoute> httpRoutes = RouteInfo.getRoute();
+        if (httpRoutes == null) {
+            return null;
+        }
+        for(HttpRoute httpRoute : httpRoutes){
+            if(Objects.equals(httpRoute.getName(), routeName)){
+                return httpRoute;
             }
         }
         return null;
@@ -69,26 +81,30 @@ public class RouteInfo {
     /**
      * 通过已有路由名称修改路由，若不存在该路由名称，则进行追加路由
      */
-    public boolean setRoute(Route updateRoute) throws JsonProcessingException {
+    public static boolean setRoute(HttpRoute updateRoute) throws JsonProcessingException {
 
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoute();
+        List<HttpRoute> routeList = RouteInfo.getRoute();
+
+        if (routeList == null) {
+            routeList = new ArrayList<>();
+        }
 
         // 待更新的结果集
-        List<Route> updateRouteList = new ArrayList<>();
+        List<HttpRoute> updateRouteList = new ArrayList<>();
 
         // 如果存在该路由则获取到
-        Route route = this.getRoute(updateRoute.getName());
-        if (route == null){
+        HttpRoute httpRoute = getRoute(updateRoute.getName());
+        if (httpRoute == null){
             // 若不存在，则进行追加
             routeList.add(updateRoute);
-
             // TODO 将原先列表数据直接返回更新
+            System.out.println("setRoute:##" + routeList);
             RouteInfo.updateRoteList(routeList);
 
         } else {
             // 若该路由信息存在，则进行更新
-            for(Route routeItem : routeList){
+            for(HttpRoute routeItem : routeList){
                 if(Objects.equals(routeItem.getName(), updateRoute.getName())){
                     updateRouteList.add(updateRoute);
                 } else {
@@ -109,22 +125,21 @@ public class RouteInfo {
      * @param routeName
      * @throws JsonProcessingException
      */
-    public boolean delRoute(String routeName) throws JsonProcessingException {
+    public static boolean delRoute(String routeName) throws JsonProcessingException {
 
         // 修改前结果集
-        List<Route> routeList = RouteInfo.getRoute();
+        List<HttpRoute> routeList = RouteInfo.getRoute();
 
         // 待更新的结果集
-        List<Route> updateRouteList = new ArrayList<>();
-
-        Route route = this.getRoute(routeName);
-        if (route == null){
+        List<HttpRoute> updateRouteList = new ArrayList<>();
+        HttpRoute httpRoute = getRoute(routeName);
+        if (httpRoute == null){
             // 若不存在，返回false
             return false;
 
         } else {
             // 若该路由信息存在，则进行更新
-            for(Route routeItem : routeList){
+            for(HttpRoute routeItem : routeList){
                 if(Objects.equals(routeItem.getName(), routeName)){
                     continue;
                 } else {
@@ -137,4 +152,22 @@ public class RouteInfo {
         }
         return true;
     }
+
+    /**
+     * 通过路由名关键词和路径关键词搜索符合条件的路由
+     * @param routeName 路由名关键词
+     * @param path  路径关键词
+     * @return
+     */
+    public static List<HttpRoute> searchByNameAndPath(String routeName, String path) throws JsonProcessingException {
+        List<HttpRoute> httpRoutes = getRoute();
+        List<HttpRoute> targetList = new ArrayList<>();
+        for (HttpRoute httpRoute : httpRoutes) {
+            if (httpRoute.getName().contains(routeName) && httpRoute.getPath().contains(path)) {
+                targetList.add(httpRoute);
+            }
+        }
+        return targetList;
+    }
+
 }

@@ -1,14 +1,17 @@
 package com.lss233.wind.gateway.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * 定义一条路由
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Route implements Serializable {
 
-    public static long serializableID = 1L;
+    public static final long serialVersionUID = 1L;
     /**
      * 名称，唯一，用于标识路由
      */

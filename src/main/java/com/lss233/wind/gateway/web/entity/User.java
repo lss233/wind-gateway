@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class User implements Serializable {
 
-    public static long serializableID = 1L;
+    public static final long serialVersionUID = 1L;
 
     private String username = "";
     private String password = "";

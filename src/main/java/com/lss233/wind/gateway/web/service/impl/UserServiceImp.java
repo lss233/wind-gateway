@@ -3,10 +3,11 @@ package com.lss233.wind.gateway.web.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.web.dao.UserConsulDao;
-import com.lss233.wind.gateway.web.entity.AccessURL;
 import com.lss233.wind.gateway.web.entity.User;
 import com.lss233.wind.gateway.web.service.UserService;
 import com.lss233.wind.gateway.web.util.JwtUtils;
+import com.lss233.wind.gateway.web.util.MyResult;
+import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
 
 import java.util.HashMap;
@@ -21,12 +22,17 @@ public class UserServiceImp implements UserService {
     public static UserConsulDao userConsulDao = new UserConsulDao();
 
     @Override
-    public void login(Context context) throws JsonProcessingException {
+    public MyResult login(Context context) throws JsonProcessingException {
         //获取前端传过来的账号密码
-        String username = context.queryParam("username");
-        String password = context.queryParam("password");
+        String username = "$";
+        username = context.formParam("username");
+        String password = context.formParam("password");
+        System.out.println(context.formParamMap());
+        System.out.println("#####"+username + "#####" + password);
         User user = userConsulDao.getUserFromConsulByKey(username);
-        assert user!=null;
+        if (user == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "不存在该账号，请先创建。", null);
+        }
         if (user.getPassword().equals(password)) {
             Map<String, String> claims = new HashMap<>();
             claims.put("username", username);
@@ -39,9 +45,9 @@ public class UserServiceImp implements UserService {
             System.out.println(jwt);
             context.cookie("jwt", jwt);
             System.out.println(context.cookie("jwt"));
-            context.result("登录成功");
+            return MyResult.success("登录成功");
         } else {
-            context.result("账号或密码错误!");
+            return MyResult.fail(ResultEnum.NOT_LOGIN,"账号或密码错误");
         }
     }
 

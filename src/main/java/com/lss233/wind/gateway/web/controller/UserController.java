@@ -13,10 +13,20 @@ public class UserController {
 
     public static UserService userService = new UserServiceImp();
 
+    /**
+     * 登录接口
+     * @param context
+     * @throws JsonProcessingException
+     */
     public static void login(Context context) throws JsonProcessingException {
-        userService.login(context);
+        context.json(userService.login(context));
     }
 
+    /**
+     * 注册，后来得知不需要注册操作，细节就没有完善
+     * @param context
+     * @throws JsonProcessingException
+     */
     public static void register(Context context) throws JsonProcessingException {
         userService.register(context);
     }

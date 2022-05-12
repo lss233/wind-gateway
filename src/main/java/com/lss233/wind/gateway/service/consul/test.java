@@ -34,8 +34,6 @@ public class test {
 
         UpstreamInfo.setUpstreamList(upstreams);
 
-        System.out.println(UpstreamInfo.getUpstream().get(1).getDescription());
-
         System.out.println("===========================================================================");
 
         ConsulApi consulApi = new ConsulApi();

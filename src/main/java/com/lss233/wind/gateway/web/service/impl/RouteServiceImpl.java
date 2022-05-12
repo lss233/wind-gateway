@@ -1,16 +1,16 @@
 package com.lss233.wind.gateway.web.service.impl;
 
-import com.ecwid.consul.v1.Response;
-import com.ecwid.consul.v1.kv.model.GetValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lss233.wind.gateway.common.Route;
-import com.lss233.wind.gateway.service.consul.ConsulApi;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
+import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.dao.RouteConsulDao;
 import com.lss233.wind.gateway.web.service.RouteService;
+import com.lss233.wind.gateway.web.util.MyResult;
+import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
+import io.netty.util.internal.StringUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,25 +19,105 @@ import java.util.List;
  */
 public class RouteServiceImpl implements RouteService {
 
-    public RouteConsulDao routeConsulDao = new RouteConsulDao();
-
     @Override
-    public void createRoute(Context context) throws JsonProcessingException {
-        Route route = context.bodyAsClass(Route.class);
-        String routeJson = routeConsulDao.storeRouteToConsul(route);
-        context.result(routeJson);
-        // TODO: 2022/5/5 查看测试数据，之后去掉
-        System.out.println("routeJson："+routeJson);
+    public MyResult<HttpRoute> setRoute(HttpRoute httpRoute) {
+        if (httpRoute == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(),"路由配置失败，路由信息不可为null", null);
+        }
+        try {
+            RouteInfo.setRoute(httpRoute);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+        return MyResult.success(httpRoute);
     }
 
     @Override
-    public void getRoute(Context context) throws JsonProcessingException {
-        String key = context.pathParam("routeKey");
-        ConsulApi api = new ConsulApi();
-        String route = api.getSingleKVForKey(key);
-        context.json(route);
-
-//        List<Route> routeList = RouteInfo.getRoute();
-
+    public MyResult<HttpRoute> getRoute(String routeName) {
+        HttpRoute httpRoute = null;
+        try {
+            httpRoute = RouteInfo.getRoute(routeName);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+        if (httpRoute == null) {
+            return MyResult.fail(ResultEnum.NOT_FOUND.getCode(), routeName+"未找到",null);
+        }
+        return MyResult.success(httpRoute);
     }
+
+    @Override
+    public MyResult<List<HttpRoute>> getAllRoutes() {
+        List<HttpRoute> httpRoutes = null;
+        try {
+            httpRoutes = RouteInfo.getRoute();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+        if (httpRoutes == null) {
+            return MyResult.fail(ResultEnum.NOT_FOUND);
+        }
+        return MyResult.success(httpRoutes);
+    }
+
+    @Override
+    public MyResult deleteRoute(String routeName) {
+        if (StringUtil.isNullOrEmpty(routeName)) {
+            return MyResult.fail(ResultEnum.NOT_FOUND.getCode(),"routeName不可为空",null);
+        }
+        boolean isDel = false;
+        try {
+            isDel = RouteInfo.delRoute(routeName);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+        if (!isDel){
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由删除失败",null);
+        }
+        return MyResult.success();
+    }
+
+    @Override
+    public MyResult onOrOffline(String routeName ,Integer isPublish) {
+        if (StringUtil.isNullOrEmpty(routeName) || isPublish == null) {
+            return MyResult.fail(ResultEnum.ERROR.getCode(), "路由名和路由上下线设置均不可为空", null);
+        }
+        try{
+            HttpRoute httpRoute = RouteInfo.getRoute(routeName);
+            if (httpRoute == null) {
+                return MyResult.fail(ResultEnum.NOT_FOUND);
+            }
+            boolean flag = false;
+            if (isPublish == 1) {
+                flag = true;
+            }
+            httpRoute.setPublish(flag);
+            RouteInfo.setRoute(httpRoute);
+        }catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+
+        return MyResult.success();
+    }
+
+    @Override
+    public MyResult search(String routeName, String path) {
+        List<HttpRoute> httpRoutes;
+        try {
+            httpRoutes = RouteInfo.searchByNameAndPath(routeName, path);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR);
+        }
+        if (httpRoutes.isEmpty()) {
+            return MyResult.fail(ResultEnum.NOT_FOUND);
+        }
+        return MyResult.success(httpRoutes);
+    }
+
 }

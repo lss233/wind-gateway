@@ -9,15 +9,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import kotlin.collections.MapsKt;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
-// 使用io.jsonwebtoken包
 public class JwtUtils {
 
 
@@ -38,7 +34,7 @@ public class JwtUtils {
     public static Date getExpirationDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        calendar.add(Calendar.DATE, 3);
         return calendar.getTime();
     }
 
