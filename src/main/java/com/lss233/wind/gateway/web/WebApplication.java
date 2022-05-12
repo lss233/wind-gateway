@@ -46,7 +46,7 @@ public class WebApplication {
         Javalin app = Javalin.create(config -> config.accessManager(new ApiAccessManager())).start(7000);
         app.routes(() -> {
             path("user", () -> {
-                post("register", UserController::register, AccessURL.ANYONE);
+//                post("register", UserController::register, AccessURL.ANYONE);
                 post("login", UserController::login, AccessURL.ANYONE);
             });
             path("route", () -> {
