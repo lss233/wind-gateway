@@ -82,8 +82,8 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public MyResult onOrOffline(String routeName ,Integer isPublish) {
-        if (StringUtil.isNullOrEmpty(routeName) || isPublish == null) {
+    public MyResult onOrOffline(String routeName ,boolean isPublish) {
+        if (StringUtil.isNullOrEmpty(routeName)) {
             return MyResult.fail(ResultEnum.ERROR.getCode(), "路由名和路由上下线设置均不可为空", null);
         }
         try{
@@ -91,11 +91,7 @@ public class RouteServiceImpl implements RouteService {
             if (httpRoute == null) {
                 return MyResult.fail(ResultEnum.NOT_FOUND);
             }
-            boolean flag = false;
-            if (isPublish == 1) {
-                flag = true;
-            }
-            httpRoute.setPublish(flag);
+            httpRoute.setPublish(isPublish);
             RouteInfo.setRoute(httpRoute);
         }catch (JsonProcessingException e) {
             e.printStackTrace();

@@ -44,7 +44,7 @@ public interface RouteService {
      * @param isPublish 是否上线
      * @return
      */
-    MyResult onOrOffline(String routeName, Integer isPublish);
+    MyResult onOrOffline(String routeName, boolean isPublish);
 
     /**
      * 通过路由名关键词和路径关键词搜索符合条件的路由
