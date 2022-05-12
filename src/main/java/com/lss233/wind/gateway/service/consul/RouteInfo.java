@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import io.netty.util.internal.StringUtil;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -150,6 +151,23 @@ public class RouteInfo {
             RouteInfo.updateRoteList(updateRouteList);
         }
         return true;
+    }
+
+    /**
+     * 通过路由名关键词和路径关键词搜索符合条件的路由
+     * @param routeName 路由名关键词
+     * @param path  路径关键词
+     * @return
+     */
+    public static List<HttpRoute> searchByNameAndPath(String routeName, String path) throws JsonProcessingException {
+        List<HttpRoute> httpRoutes = getRoute();
+        List<HttpRoute> targetList = new ArrayList<>();
+        for (HttpRoute httpRoute : httpRoutes) {
+            if (httpRoute.getName().contains(routeName) && httpRoute.getPath().contains(path)) {
+                targetList.add(httpRoute);
+            }
+        }
+        return targetList;
     }
 
 }

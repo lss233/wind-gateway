@@ -154,4 +154,24 @@ public class UpstreamInfo {
         return true;
     }
 
+    /**
+     * 模糊查询上游
+     * @param upstreamName 上游名关键词
+     * @return
+     * @throws JsonProcessingException
+     */
+    public static List<Upstream> search(String upstreamName) throws JsonProcessingException {
+        List<Upstream> upstreams = getUpstreams();
+        if (upstreams == null) {
+            return new ArrayList<>();
+        }
+        List<Upstream> target = new ArrayList<>();
+        for (Upstream upstream : upstreams) {
+            if (upstream.getName().contains(upstreamName)) {
+                target.add(upstream);
+            }
+        }
+        return target;
+    }
+
 }

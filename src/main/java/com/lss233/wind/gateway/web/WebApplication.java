@@ -2,8 +2,11 @@ package com.lss233.wind.gateway.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
+import com.lss233.wind.gateway.service.consul.UpstreamInfo;
 import com.lss233.wind.gateway.web.controller.RouteController;
+import com.lss233.wind.gateway.web.controller.UpstreamController;
 import com.lss233.wind.gateway.web.controller.UserController;
 import com.lss233.wind.gateway.web.entity.AccessURL;
 import com.lss233.wind.gateway.web.entity.User;
@@ -42,17 +45,26 @@ public class WebApplication {
         //服务api
         Javalin app = Javalin.create(config -> config.accessManager(new ApiAccessManager())).start(7000);
         app.routes(() -> {
-            path("route", () -> {
-                post("setRoute", RouteController::setRoute, AccessURL.ADMIN);
-                put("/update", RouteController::setRoute, AccessURL.ADMIN);
-                get("getRoute/{routeName}", RouteController::getRoute, AccessURL.ADMIN);
-                get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
-                delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
-                put("/online", RouteController::online, AccessURL.ADMIN);
-            });
             path("user", () -> {
                 post("register", UserController::register, AccessURL.ANYONE);
                 post("login", UserController::login, AccessURL.ANYONE);
+            });
+            path("route", () -> {
+                post("/setRoute", RouteController::setRoute, AccessURL.ADMIN);
+                put("/update", RouteController::setRoute, AccessURL.ADMIN);
+                get("/getRoute/{routeName}", RouteController::getRoute, AccessURL.ADMIN);
+                get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
+                delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
+                put("/online", RouteController::online, AccessURL.ADMIN);
+                get("/search", RouteController::search, AccessURL.ADMIN);
+            });
+            path("upstream", () -> {
+                post("/setUpstream", UpstreamController::setUpstream, AccessURL.ADMIN);
+                put("/update", UpstreamController::setUpstream, AccessURL.ADMIN);
+                get("/getUpstream/{upstreamName}", UpstreamController::getUpstream, AccessURL.ADMIN);
+                get("/getUpstream", UpstreamController::getUpstreams, AccessURL.ADMIN);
+                delete("/deleteUpstream", UpstreamController::deleteUpstream, AccessURL.ADMIN);
+                get("/search", UpstreamController::search, AccessURL.ADMIN);
             });
         });
     }

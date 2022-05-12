@@ -1,5 +1,8 @@
 package com.lss233.wind.gateway.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -8,7 +11,10 @@ import java.util.*;
 /**
  * 定义一个上游服务
  */
-public class Upstream {
+public class Upstream implements Serializable {
+
+    public static final long serialVersionUID = 1L;
+
     /**
      * 名称，唯一，用于标识服务。
      */
@@ -48,10 +54,10 @@ public class Upstream {
     /**
      * 负载均衡算法
      */
+    @JsonIgnore
     protected Class<? extends LoadBalancer> loadBalancerClass;
 
     private transient LoadBalancer loadBalancer;
-
 
     public static class Destination {
         /**
@@ -71,6 +77,8 @@ public class Upstream {
          * 是否在线
          */
         protected boolean online;
+
+        public Destination(){}
 
         public Destination(String host, int port, int weight, boolean online) {
             this.host = host;
