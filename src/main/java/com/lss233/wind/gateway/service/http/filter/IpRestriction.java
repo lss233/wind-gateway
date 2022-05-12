@@ -1,6 +1,9 @@
 package com.lss233.wind.gateway.service.http.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Filter;
+import com.lss233.wind.gateway.service.consul.ConsulApi;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,30 +23,43 @@ import java.util.List;
 public class IpRestriction extends Filter implements PreHttpFilter{
     private static final Logger LOG = LoggerFactory.getLogger(IpRestriction.class);
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This IP is limited.".getBytes(StandardCharsets.UTF_8)));
-    List<String> IPBlackList = new ArrayList<>();
+    List<String> ipBlackList = new ArrayList<>();
 
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
-            if (!IpRestriction(request)) {
-                LOG.info("IP limit {}", ctx);
-                ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+            try {
+                if (!IpRestriction(request)) {
+                    LOG.info("IP limit {}", ctx);
+                    ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public boolean IpRestriction(HttpRequest request) {
+    public boolean IpRestriction(HttpRequest request) throws JsonProcessingException {
+        ConsulApi consulApi = new ConsulApi();
+        String ipBlackListJson = consulApi.getSingleKVForKey("IpBlackList");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[] list = objectMapper.readValue(ipBlackListJson, String[].class);
+        ipBlackList = new ArrayList<>(Arrays.asList(list));
         String ip = request.headers().get("LocalAddr");
-        IPBlackList.add("192.168.29.1");
-        if (ip == null || IPBlackList.contains(ip)) {
+        ipBlackList.add("192.168.29.1");
+        if (ip == null || ipBlackList.contains(ip)) {
             return false;
         }
         return true;
     }
 
-    public List IPBlackListAdd(String IP) {
-        IPBlackList.add(IP);
-        return IPBlackList;
+    public List<String> IpBlackListAdd(String IP) throws JsonProcessingException {
+        ipBlackList.add(IP);
+        ConsulApi consulApi = new ConsulApi();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ipBlackListJson = objectMapper.writeValueAsString(ipBlackList);
+        consulApi.setKVValue("IpBlackList", ipBlackListJson);
+        return ipBlackList;
     }
 }

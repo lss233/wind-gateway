@@ -93,9 +93,9 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction()));
-        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));
+        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpAccept()));
         route.setName("test");
         route.setPublish(true);

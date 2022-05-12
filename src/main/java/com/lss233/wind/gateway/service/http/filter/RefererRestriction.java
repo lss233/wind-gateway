@@ -1,6 +1,9 @@
 package com.lss233.wind.gateway.service.http.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Filter;
+import com.lss233.wind.gateway.service.consul.ConsulApi;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,14 +28,23 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
-            if(!refererRestriction(request)) {
-                ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Referer is limited.".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
+            try {
+                if(!refererRestriction(request)) {
+                    ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Referer is limited.".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
             }
         }
 
     }
 
-    public boolean refererRestriction(HttpRequest request) {
+    public boolean refererRestriction(HttpRequest request) throws JsonProcessingException {
+        ConsulApi consulApi = new ConsulApi();
+        String refererBlackListJson = consulApi.getSingleKVForKey("RefererBlackList");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String[] list = objectMapper.readValue(refererBlackListJson, String[].class);
+        RefererBlackList = new ArrayList<>(Arrays.asList(list));
         String referer = request.headers().get("Referer");
         LOG.debug(referer);
         RefererBlackList.add("http://127.0.0.1/");
@@ -44,8 +57,12 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
         return true;
     }
 
-    public List RefererBlackListAdd(String referer) {
+    public List<String> RefererBlackListAdd(String referer) throws JsonProcessingException {
         RefererBlackList.add(referer);
+        ConsulApi consulApi = new ConsulApi();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String RefererBlackListJson = objectMapper.writeValueAsString(RefererBlackList);
+        consulApi.setKVValue("RefererBlackList", RefererBlackListJson);
         return RefererBlackList;
     }
 }
