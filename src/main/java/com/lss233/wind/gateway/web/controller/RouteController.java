@@ -60,7 +60,7 @@ public class RouteController {
      */
     public static void online(Context context) {
         String routeName = context.formParam("routeName");
-        Integer isPublish = Integer.valueOf(Objects.requireNonNull(context.formParam("isPublish")));
+        boolean isPublish = Boolean.parseBoolean(context.formParam("isPublish"));
 
         context.json(routeService.onOrOffline(routeName, isPublish));
     }
