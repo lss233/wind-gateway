@@ -41,7 +41,7 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
 
     public boolean refererRestriction(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
-        String refererBlackListJson = consulApi.getSingleKVForKey("RefererBlackList");
+        String refererBlackListJson = consulApi.getSingleKVForKey("RefererBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();
         String[] list = objectMapper.readValue(refererBlackListJson, String[].class);
         RefererBlackList = new ArrayList<>(Arrays.asList(list));
@@ -61,7 +61,7 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
         ConsulApi consulApi = new ConsulApi();
         ObjectMapper objectMapper = new ObjectMapper();
         String RefererBlackListJson = objectMapper.writeValueAsString(RefererBlackList);
-        consulApi.setKVValue("RefererBlackList", RefererBlackListJson);
+        consulApi.setKVValue("RefererBlackList" + getRoute().getName(), RefererBlackListJson);
         return RefererBlackList;
     }
 }

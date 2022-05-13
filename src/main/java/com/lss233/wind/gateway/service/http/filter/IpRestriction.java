@@ -42,7 +42,7 @@ public class IpRestriction extends Filter implements PreHttpFilter{
 
     public boolean IpRestriction(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
-        String ipBlackListJson = consulApi.getSingleKVForKey("IpBlackList");
+        String ipBlackListJson = consulApi.getSingleKVForKey("IpBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();
         String[] list = objectMapper.readValue(ipBlackListJson, String[].class);
         ipBlackList = new ArrayList<>(Arrays.asList(list));
@@ -58,7 +58,7 @@ public class IpRestriction extends Filter implements PreHttpFilter{
         ConsulApi consulApi = new ConsulApi();
         ObjectMapper objectMapper = new ObjectMapper();
         String ipBlackListJson = objectMapper.writeValueAsString(ipBlackList);
-        consulApi.setKVValue("IpBlackList", ipBlackListJson);
+        consulApi.setKVValue("IpBlackList" + getRoute().getName(), ipBlackListJson);
         return ipBlackList;
     }
 }

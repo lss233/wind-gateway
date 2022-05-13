@@ -42,7 +42,7 @@ public class UriBlocker extends Filter implements PreHttpFilter{
     }
     public boolean UriBlock(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
-        String uriBlackListJson = consulApi.getSingleKVForKey("UriBlackList");
+        String uriBlackListJson = consulApi.getSingleKVForKey("UriBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();
         String[] list = objectMapper.readValue(uriBlackListJson, String[].class);
         uriBlackList = new ArrayList<>(Arrays.asList(list));
@@ -61,7 +61,7 @@ public class UriBlocker extends Filter implements PreHttpFilter{
         ConsulApi consulApi = new ConsulApi();
         ObjectMapper objectMapper = new ObjectMapper();
         String uriBlackListJson = objectMapper.writeValueAsString(uriBlackList);
-        consulApi.setKVValue("UriBlackList", uriBlackListJson);
+        consulApi.setKVValue("UriBlackList" + getRoute().getName(), uriBlackListJson);
         return uriBlackList;
     }
 }
