@@ -45,6 +45,7 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         // 执行路由过滤器
         if(route != null) {
             for (Filter filter : route.getFilters()) {
+                filter.setRoute(route);
                 if(filter instanceof PreHttpFilter) {
                     ((PreHttpFilter) filter).onClientMessage(ctx, msg);
                     if(isClosed) {
@@ -91,12 +92,12 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
 
         HttpRoute route = new HttpRoute();
         route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction()));
-        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpAccept()));
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter())); //限流
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction())); //IP拦截
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction())); //Referer拦截
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction())); // User-Agent拦截
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));  //Uri拦截
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpAccept()));  //IP允许
         route.setName("test");
         route.setPublish(true);
         route.setUpstream(upstream);

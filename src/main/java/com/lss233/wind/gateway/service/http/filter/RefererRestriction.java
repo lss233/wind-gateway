@@ -47,7 +47,6 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
         RefererBlackList = new ArrayList<>(Arrays.asList(list));
         String referer = request.headers().get("Referer");
         LOG.debug(referer);
-        RefererBlackList.add("http://127.0.0.1/");
         for (String regexp : RefererBlackList) {
             if (referer == null || referer.matches(regexp)) {
                 return false;

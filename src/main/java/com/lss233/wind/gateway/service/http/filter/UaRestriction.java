@@ -43,7 +43,7 @@ public class UaRestriction extends Filter implements PreHttpFilter {
 
     public boolean UaRestriction (HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
-        String UaBlackListJson = consulApi.getSingleKVForKey("UaBlackList");
+        String UaBlackListJson = consulApi.getSingleKVForKey("UaBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();
         String[] list = objectMapper.readValue(UaBlackListJson, String[].class);
         UaBlackList = new ArrayList<>(Arrays.asList(list));
@@ -59,7 +59,7 @@ public class UaRestriction extends Filter implements PreHttpFilter {
         ConsulApi consulApi = new ConsulApi();
         ObjectMapper objectMapper = new ObjectMapper();
         String UaBlackListJson = objectMapper.writeValueAsString(UaBlackList);
-        consulApi.setKVValue("UaBlackList", UaBlackListJson);
+        consulApi.setKVValue("UaBlackList-" + getRoute().getName(), UaBlackListJson);
         return UaBlackList;
     }
 }

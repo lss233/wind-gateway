@@ -47,7 +47,6 @@ public class IpRestriction extends Filter implements PreHttpFilter{
         String[] list = objectMapper.readValue(ipBlackListJson, String[].class);
         ipBlackList = new ArrayList<>(Arrays.asList(list));
         String ip = request.headers().get("LocalAddr");
-        ipBlackList.add("192.168.29.1");
         if (ip == null || ipBlackList.contains(ip)) {
             return false;
         }

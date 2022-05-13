@@ -49,7 +49,6 @@ public class UriBlocker extends Filter implements PreHttpFilter{
         String uri = request.headers().get("Uri");
         System.out.println(uri);
         System.out.println(request.headers().get("Uri"));
-        this.uriBlackList.add("/sugrec?prod=pc_his&from=pc_web&json=1&sid=36309_31253_36167_34584_35979_36073_36337_26350_36300_36312_36061&hisdata=&_t=1651818115692&req=2&csor=0");
         if (uri == null || this.uriBlackList.contains(uri)) {
             return false;
         }

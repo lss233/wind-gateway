@@ -48,7 +48,6 @@ public class IpAccept extends Filter implements PreHttpFilter {
         String[] list = objectMapper.readValue(ipWhiteListJson, String[].class);
         iPWhiteList = new ArrayList<>(Arrays.asList(list));
         String ip = request.headers().get("LocalAddr");
-        iPWhiteList.add("192.168.29.1");
         if (ip != null && iPWhiteList.contains(ip)) {
             return true;
         }
