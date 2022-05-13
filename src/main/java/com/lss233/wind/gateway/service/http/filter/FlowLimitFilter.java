@@ -23,7 +23,7 @@ public class FlowLimitFilter extends Filter implements PreHttpFilter{
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
-            if(!rateLimiterByZset("1", 5, 1)) {
+            if(!rateLimiterByZset("1", (Integer) getConfiguration().getOrDefault("maxCount", 5), (Integer) getConfiguration().getOrDefault("timeRange", 1))) {
                 LOG.info("Rate limit {} exceed!", ctx);
                 ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
             }
