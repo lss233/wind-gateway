@@ -11,11 +11,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.ws.Endpoint;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,13 +101,9 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        if(cause instanceof UnknownHostException) {
-            ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.wrappedBuffer("Bad Gateway".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            cause.printStackTrace();
-            ctx.writeAndFlush(cause).addListener(ChannelFutureListener.CLOSE);
-        }
-
+        ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY, Unpooled.wrappedBuffer("Bad Gateway".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
+        cause.printStackTrace();
+        ctx.writeAndFlush(cause).addListener(ChannelFutureListener.CLOSE);
     }
 
     @Override
