@@ -24,8 +24,7 @@ public class UserServiceImp implements UserService {
     @Override
     public MyResult login(Context context) throws JsonProcessingException {
         //获取前端传过来的账号密码
-        String username = "$";
-        username = context.formParam("username");
+        String username = context.formParam("username");
         String password = context.formParam("password");
         System.out.println(context.formParamMap());
         System.out.println("#####"+username + "#####" + password);

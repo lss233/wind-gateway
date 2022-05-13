@@ -13,6 +13,7 @@ public class HttpRoute extends Route implements Serializable {
     private String host;
     private String path;
     protected String uri = "";
+    private List<MatchRule> matchRuleList;
 
     public HttpRoute() {
     }
