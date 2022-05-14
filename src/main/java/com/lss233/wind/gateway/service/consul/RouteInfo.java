@@ -31,7 +31,6 @@ public class RouteInfo {
         HttpRoute[] httpRoutes;
         try{
             valueResponse = consulApi.getSingleKVForKey("routeList");
-            System.out.println(valueResponse);
             ObjectMapper mapper = new ObjectMapper();
             // json 转数组对象
             httpRoutes = mapper.readValue(valueResponse, HttpRoute[].class);

@@ -16,14 +16,15 @@ public class ScheduledTasks implements Runnable{
 
     public void run() {
 
+        /**
+         * 定时刷新读取缓存
+         */
         while (true) {
             try {
 
                 HttpRouteCache.updateCache();
                 UpstreamCache.updateCache();
 
-                System.out.println(HttpRouteCache.getHttpRoutes());
-                System.out.println(UpstreamCache.getUpstream());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
