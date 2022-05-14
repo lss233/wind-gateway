@@ -25,6 +25,10 @@ public class UaRestriction extends Filter implements PreHttpFilter {
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This User-Agent is limited.".getBytes(StandardCharsets.UTF_8)));
     List<String> UaBlackList = new ArrayList<>();
 
+    public UaRestriction(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {

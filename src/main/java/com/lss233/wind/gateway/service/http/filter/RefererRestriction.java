@@ -24,6 +24,10 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
     private static final Logger LOG = LoggerFactory.getLogger(RefererRestriction.class);
    List<String> RefererBlackList = new ArrayList<>();
 
+    public RefererRestriction(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {

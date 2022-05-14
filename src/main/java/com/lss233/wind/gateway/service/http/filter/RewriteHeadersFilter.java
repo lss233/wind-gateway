@@ -6,6 +6,10 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 
 public class RewriteHeadersFilter extends Filter implements PreHttpFilter {
+    public RewriteHeadersFilter(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {

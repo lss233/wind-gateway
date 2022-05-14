@@ -26,6 +26,10 @@ public class IpAccept extends Filter implements PreHttpFilter {
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This IP is Accepted.".getBytes(StandardCharsets.UTF_8)));
     List<String> iPWhiteList = new ArrayList<>();
 
+    public IpAccept(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {

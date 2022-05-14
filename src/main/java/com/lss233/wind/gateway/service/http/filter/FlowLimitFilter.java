@@ -19,6 +19,11 @@ import java.nio.charset.StandardCharsets;
 public class FlowLimitFilter extends Filter implements PreHttpFilter{
     private static final Logger LOG = LoggerFactory.getLogger(FlowLimitFilter.class);
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.TOO_MANY_REQUESTS, Unpooled.wrappedBuffer("Too many requests.".getBytes(StandardCharsets.UTF_8)));
+
+    public FlowLimitFilter(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {

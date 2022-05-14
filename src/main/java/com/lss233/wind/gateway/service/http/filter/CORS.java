@@ -10,6 +10,10 @@ import io.netty.handler.codec.http.HttpRequest;
  * @Date : 2022/5/7 17:28
  */
 public class CORS extends Filter implements PreHttpFilter{
+    public CORS(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {
