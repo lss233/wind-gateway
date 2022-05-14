@@ -1,5 +1,5 @@
 # 网关服务端口
-servicePort: 80
+servicePort: 801
 
 # consul数据中心地址
 consulURL: localhost
