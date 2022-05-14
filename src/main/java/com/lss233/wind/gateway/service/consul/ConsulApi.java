@@ -7,6 +7,7 @@ import com.ecwid.consul.v1.agent.model.NewService;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
+import com.lss233.wind.gateway.common.config.ReadConfiguration;
 
 import java.util.List;
 
@@ -19,8 +20,10 @@ import java.util.List;
 
 public class ConsulApi {
 
-    ConsulClient client = new ConsulClient("127.0.0.1",8500);
+    // ConsulClient client = new ConsulClient(ReadConfiguration.Config.getConsulURL(), ReadConfiguration.Config.getConsulPort());
     // TODO 这里需要将配置信息从本地文件读取，在本地文件里配置Yaml文件进行加载配置
+
+    ConsulClient client = new ConsulClient(ReadConfiguration.Config.getConsulURL(), ReadConfiguration.Config.getConsulPort());
 
     /**
      * 添加KV数值

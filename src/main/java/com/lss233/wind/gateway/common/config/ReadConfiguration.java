@@ -19,6 +19,7 @@ import java.util.List;
 
 public class ReadConfiguration {
 
+    public static ConfigEntity Config;
     private static final Logger logger = LoggerFactory.getLogger(ReadConfiguration.class);
 
     public void readYamlConfiguration() {
@@ -32,9 +33,13 @@ public class ReadConfiguration {
             for(Object it : its) {
                 configEntityList.add((ConfigEntity) it);
             }
-            logger.info(">>>>>>Config:{}", configEntityList);
+            ReadConfiguration.Config = configEntityList.get(0);
+            logger.info(">>>>>>Config:{}", ReadConfiguration.Config);
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
     }
+
+
+
 }

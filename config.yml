@@ -1,3 +1,10 @@
+# 网关服务端口
 servicePort: 80
-consulURL: 'localhost'
+
+# consul数据中心地址
+consulURL: localhost
+
+# consul服务端口
 consulPort: 8500
+
+# Web控制面板端口
