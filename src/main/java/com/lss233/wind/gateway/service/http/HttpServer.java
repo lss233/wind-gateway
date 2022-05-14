@@ -1,6 +1,8 @@
 package com.lss233.wind.gateway.service.http;
 
+import com.lss233.wind.gateway.common.config.ReadConfiguration;
 import com.lss233.wind.gateway.common.type.Service;
+import com.lss233.wind.gateway.service.consul.Cache.ScheduledTasks;
 import com.lss233.wind.gateway.service.http.filter.FilterRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -24,7 +26,16 @@ public class HttpServer {
         filterRegistry.init();
 
         LOG.info("Loading settings...");
+        // 读取配置信息
+        ReadConfiguration readConfiguration = new ReadConfiguration();
+        readConfiguration.readYamlConfiguration();
+
         // 读取数据
+        Runnable runnable = new ScheduledTasks();
+        Thread thread = new Thread(runnable, "Loading to Cache...");
+        // 启动线程定时任务刷新到缓存
+        thread.start();
+
         LOG.info("Starting...");
         // 启动服务器
         ServerBootstrap bootstrap = new ServerBootstrap();

@@ -44,7 +44,7 @@ public class ConsulApi {
         try{
             value = keyValueResponse.getValue().getDecodedValue();
             // TODO: 2022/5/10   这里测试格式使用，上线后注释掉
-            System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
+            // System.out.println(keyValueResponse.getValue().getKey() + ": " + keyValueResponse.getValue().getDecodedValue());
         }catch (NullPointerException e){
             return null;
         }
@@ -69,7 +69,7 @@ public class ConsulApi {
         // (递归)获取键前缀的 KV 列表
         Response<List<GetValue>> keyValuesResponse = client.getKVValues(keyPrefix);
         // TODO 这里测试格式使用，上线后注释掉
-        keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
+        // keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
         // prints "com.my.app.foo: foo" and "com.my.app.bar: bar"
         return keyValuesResponse;
     }
@@ -83,7 +83,7 @@ public class ConsulApi {
         // 列出已知的数据中心
         Response<List<String>> response = client.getCatalogDatacenters();
         // TODO 这里测试格式使用，上线后注释掉
-        System.out.println("Datacenters: " + response.getValue());
+        // System.out.println("Datacenters: " + response.getValue());
         return response;
     }
 
@@ -124,7 +124,7 @@ public class ConsulApi {
                 .build();
         Response<List<HealthService>> healthyServices = client.getHealthServices(serviceName, request);
         // TODO 这里测试格式使用，上线后注释掉
-        healthyServices.getValue().forEach(value -> System.out.println(value.toString()));
+        // healthyServices.getValue().forEach(value -> System.out.println(value.toString()));
         return healthyServices;
         /*
             根据名称和标签查询健康服务(如果健康则返回 myapp_01)

@@ -1,8 +1,6 @@
 package com.lss233.wind.gateway.service.http.filter;
 
 import com.lss233.wind.gateway.common.Filter;
-import com.lss233.wind.gateway.service.http.HttpServer;
-import com.sun.jndi.toolkit.url.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

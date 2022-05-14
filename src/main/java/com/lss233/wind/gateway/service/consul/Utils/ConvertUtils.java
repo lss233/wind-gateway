@@ -1,7 +1,6 @@
 package com.lss233.wind.gateway.service.consul.Utils;
 
 import com.lss233.wind.gateway.common.Upstream;
-import com.lss233.wind.gateway.service.consul.entity.UpstreamConvert;
 
 /**
  * Author: icebigpig

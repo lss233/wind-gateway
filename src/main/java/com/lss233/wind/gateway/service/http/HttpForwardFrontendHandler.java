@@ -3,6 +3,8 @@ package com.lss233.wind.gateway.service.http;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.common.lb.RandomLoadBalancer;
+import com.lss233.wind.gateway.service.consul.Cache.HttpRouteCache;
+import com.lss233.wind.gateway.service.consul.Cache.UpstreamCache;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.service.http.filter.*;
 import io.netty.buffer.Unpooled;
@@ -74,13 +76,14 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
 
     // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
-        for (HttpRoute route : RouteInfo.getRoute()) {
+        for (HttpRoute route : HttpRouteCache.getHttpRoutes()) {
             for (MatchRule matchRule : route.getMatchRuleList()) {
                 if(matchRule.isMatch(req)) {
                     return route;
                 }
             }
         }
+
         List<Upstream.Destination> endpoints = new ArrayList<>();
         endpoints.add(new Upstream.Destination("192.168.1.5", 8080, 1, true));
 
@@ -93,7 +96,7 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         upstream.SetLoadBalancerClass(RandomLoadBalancer.class);
 
         HttpRoute route = new HttpRoute();
-        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter())); //限流
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction())); //IP拦截
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction())); //Referer拦截

@@ -1,4 +1,4 @@
-package com.lss233.wind.gateway.service.consul.entity;
+package com.lss233.wind.gateway.service.consul.Utils;
 
 import com.lss233.wind.gateway.common.Scheme;
 import com.lss233.wind.gateway.common.Upstream;

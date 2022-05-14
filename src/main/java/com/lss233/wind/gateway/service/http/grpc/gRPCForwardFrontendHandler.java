@@ -92,7 +92,7 @@ public class gRPCForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         upstream.setLoadBalancerClass(RandomLoadBalancer.class);
 
         gRPCRoute route = new gRPCRoute();
-        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
+//        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction()));
 //        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));

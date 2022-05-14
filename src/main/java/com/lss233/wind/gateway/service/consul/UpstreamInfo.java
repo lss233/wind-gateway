@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.service.consul.Utils.ConvertUtils;
-import com.lss233.wind.gateway.service.consul.entity.UpstreamConvert;
+import com.lss233.wind.gateway.service.consul.Utils.UpstreamConvert;
 
 import java.util.ArrayList;
 import java.util.List;
