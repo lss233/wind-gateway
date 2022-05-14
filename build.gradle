@@ -1,9 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+    }
+}
+
 plugins {
     id 'java'
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
 group 'com.lss233.wind'
 version '1.0-SNAPSHOT'
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 repositories {
     maven {
@@ -26,6 +40,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha7'
     implementation 'com.auth0:java-jwt:3.19.1'
     implementation 'commons-codec:commons-codec:1.15'
+    implementation 'org.yaml:snakeyaml:1.30'
 }
 
 test {
@@ -36,3 +51,12 @@ compileJava.options.encoding = 'UTF-8'
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Application',
+                'Main-Class': 'com.lss233.wind.gateway.Application'
+    }
+}
+
+shadowJar {}

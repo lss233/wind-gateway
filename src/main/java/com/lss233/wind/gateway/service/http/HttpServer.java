@@ -35,7 +35,7 @@ public class HttpServer {
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new HttpServerInitializer(null));
 
-        ChannelFuture f = bootstrap.bind(new InetSocketAddress(80)).sync();
+        ChannelFuture f = bootstrap.bind(new InetSocketAddress(801)).sync();
         LOG.info("HTTP server start up at port " + 80);
         f.channel().closeFuture().sync();
 

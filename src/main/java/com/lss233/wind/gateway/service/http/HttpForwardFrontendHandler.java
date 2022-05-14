@@ -82,15 +82,14 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
             }
         }
         List<Upstream.Destination> endpoints = new ArrayList<>();
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+        endpoints.add(new Upstream.Destination("192.168.1.5", 8080, 1, true));
 
         Upstream upstream = new Upstream();
         upstream.setName("test upstream");
         upstream.setConnectTimeout(5000);
         upstream.setEndpoints(endpoints);
-        upstream.setScheme(new HttpsScheme());
+//        upstream.setScheme(new HttpsScheme());
+        upstream.setScheme(new HttpScheme());
         upstream.SetLoadBalancerClass(RandomLoadBalancer.class);
 
         HttpRoute route = new HttpRoute();
