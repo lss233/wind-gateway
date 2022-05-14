@@ -1,6 +1,7 @@
 package com.lss233.wind.gateway.service.http;
 
 import com.lss233.wind.gateway.common.type.Service;
+import com.lss233.wind.gateway.service.http.filter.FilterRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -16,8 +17,12 @@ import java.net.InetSocketAddress;
 @Service
 public class HttpServer {
     private final static Logger LOG = LoggerFactory.getLogger(HttpServer.class);
+    private static FilterRegistry filterRegistry;
 
     public void start() throws Exception {
+        filterRegistry = new FilterRegistry();
+        filterRegistry.init();
+
         LOG.info("Loading settings...");
         // 读取数据
         LOG.info("Starting...");

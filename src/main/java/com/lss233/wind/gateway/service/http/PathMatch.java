@@ -2,9 +2,13 @@ package com.lss233.wind.gateway.service.http;
 
 import io.netty.handler.codec.http.HttpRequest;
 
-public class DomainMatch extends MatchRule {
+/**
+ * @Author : yjp
+ * @Date : 2022/5/14 17:15
+ */
+public class PathMatch extends MatchRule{
     @Override
     boolean isMatch(HttpRequest request) {
-        return getValue().equalsIgnoreCase(request.headers().get("Host"));
+        return request.uri().matches(getValue());
     }
 }

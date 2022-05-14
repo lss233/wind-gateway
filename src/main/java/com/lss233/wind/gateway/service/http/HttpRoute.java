@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lss233.wind.gateway.common.Route;
 
 import java.io.Serializable;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpRoute extends Route implements Serializable {
@@ -12,7 +13,6 @@ public class HttpRoute extends Route implements Serializable {
 
     private String host;
     private String path;
-    protected String uri = "";
     private List<MatchRule> matchRuleList;
 
     public HttpRoute() {
@@ -24,7 +24,6 @@ public class HttpRoute extends Route implements Serializable {
 
     public void setHost(String host) {
         this.host = host;
-        this.uri += host;
     }
 
     public String getPath() {
@@ -33,10 +32,13 @@ public class HttpRoute extends Route implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
-        this.uri += path;
     }
 
-    public String getUri() {
-        return uri;
+    public List<MatchRule> getMatchRuleList() {
+        return matchRuleList;
+    }
+
+    public void setMatchRuleList(List<MatchRule> matchRuleList) {
+        this.matchRuleList = matchRuleList;
     }
 }

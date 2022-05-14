@@ -25,6 +25,10 @@ public class UriBlocker extends Filter implements PreHttpFilter{
     private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Uri is Blockered.".getBytes(StandardCharsets.UTF_8)));
     List<String> uriBlackList = new ArrayList<>();
 
+    public UriBlocker(String name) {
+        super(name);
+    }
+
     @Override
     public void onClientMessage(ChannelHandlerContext ctx, HttpObject msg) {
         if(msg instanceof HttpRequest) {
@@ -47,7 +51,6 @@ public class UriBlocker extends Filter implements PreHttpFilter{
         String[] list = objectMapper.readValue(uriBlackListJson, String[].class);
         uriBlackList = new ArrayList<>(Arrays.asList(list));
         String uri = request.headers().get("Uri");
-        System.out.println(uri);
         System.out.println(request.headers().get("Uri"));
         if (uri == null || this.uriBlackList.contains(uri)) {
             return false;

@@ -3,7 +3,14 @@ package com.lss233.wind.gateway.common;
 import java.util.Map;
 
 public class Filter {
-    private Route route;
+    private final String name;
+    private transient Route route;
+    private boolean enable;
+    private Map<Object, Object> configuration;
+
+    public Filter(String name) {
+        this.name = name;
+    }
 
     public Route getRoute() {
         return route;
@@ -12,8 +19,6 @@ public class Filter {
     public void setRoute(Route route) {
         this.route = route;
     }
-    private boolean enable;
-    private Map<Object, Object> configuration;
 
     public boolean isEnable() {
         return enable;

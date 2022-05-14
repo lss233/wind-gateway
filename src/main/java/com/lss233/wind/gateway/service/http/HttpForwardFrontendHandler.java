@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.http;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.common.lb.RandomLoadBalancer;
+import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.service.http.filter.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -73,7 +74,13 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
 
     // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
-
+        for (HttpRoute route : RouteInfo.getRoute()) {
+            for (MatchRule matchRule : route.getMatchRuleList()) {
+                if(matchRule.isMatch(req)) {
+                    return route;
+                }
+            }
+        }
         List<Upstream.Destination> endpoints = new ArrayList<>();
         endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
         endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
