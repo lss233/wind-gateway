@@ -34,7 +34,7 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
             HttpRequest request = (HttpRequest) msg;
             try {
                 if(!refererRestriction(request)) {
-                    ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Referer is limited.".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
+                    ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("Your referer host is not allowed".getBytes(StandardCharsets.UTF_8)))).addListener(ChannelFutureListener.CLOSE);
                 }
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

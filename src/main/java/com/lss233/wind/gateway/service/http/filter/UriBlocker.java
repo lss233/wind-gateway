@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class UriBlocker extends Filter implements PreHttpFilter{
     private static final Logger LOG = LoggerFactory.getLogger(UriBlocker.class);
-    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This Uri is Blockered.".getBytes(StandardCharsets.UTF_8)));
+    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("access is not allowed.".getBytes(StandardCharsets.UTF_8)));
     List<String> uriBlackList = new ArrayList<>();
 
     public UriBlocker(String name) {

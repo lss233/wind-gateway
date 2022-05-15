@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class UaRestriction extends Filter implements PreHttpFilter {
     private static final Logger LOG = LoggerFactory.getLogger(UaRestriction.class);
-    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This User-Agent is limited.".getBytes(StandardCharsets.UTF_8)));
+    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("Not allowed.".getBytes(StandardCharsets.UTF_8)));
     List<String> UaBlackList = new ArrayList<>();
 
     public UaRestriction(String name) {

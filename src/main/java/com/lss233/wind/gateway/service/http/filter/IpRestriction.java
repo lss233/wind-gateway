@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class IpRestriction extends Filter implements PreHttpFilter{
     private static final Logger LOG = LoggerFactory.getLogger(IpRestriction.class);
-    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("This IP is limited.".getBytes(StandardCharsets.UTF_8)));
+    private final static DefaultFullHttpResponse RESPONSE = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN, Unpooled.wrappedBuffer("Your IP address is not allowed".getBytes(StandardCharsets.UTF_8)));
     List<String> ipBlackList = new ArrayList<>();
 
     public IpRestriction(String name) {
