@@ -1,8 +1,11 @@
 package com.lss233.wind.gateway.common;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.*;
 
+@JsonDeserialize(converter = SchemeDeserializer.class)
 public interface Scheme {
     /**
      * 协议名称

@@ -10,23 +10,12 @@ import java.util.Set;
 public class SchemeRegistry extends Registry<Scheme> {
     private final static Logger LOG = LoggerFactory.getLogger(SchemeRegistry.class);
 
+    @Override
     public void init() {
 
         LOG.info("Initializing Scheme Registry...");
 
         registries.put("HTTP", HttpScheme.class);
         registries.put("HTTPS", HttpScheme.class);
-    }
-
-    public Class<? extends Scheme> getRegistry(String key) {
-        return registries.get(key);
-    }
-
-    public Set<String> getKeys() {
-        return registries.keySet();
-    }
-
-    public void addRegistry(String key, Class<? extends Scheme> filter) {
-        registries.put(key, filter);
     }
 }
