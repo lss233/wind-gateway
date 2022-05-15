@@ -21,7 +21,7 @@ public class PathMatch {
         this.value = value;
     }
 
-    boolean isMatch(HttpRequest request) {
+    public boolean isMatch(HttpRequest request) {
 
         if (request.headers().get("path").matches(getValue())) {
             return true;

@@ -34,7 +34,7 @@ public class IpRestriction extends Filter implements PreHttpFilter{
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
             try {
-                if (!IpRestriction(request)) {
+                if (!ipRestriction(request)) {
                     LOG.info("IP limit {}", ctx);
                     ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
                 }
@@ -44,7 +44,7 @@ public class IpRestriction extends Filter implements PreHttpFilter{
         }
     }
 
-    public boolean IpRestriction(HttpRequest request) throws JsonProcessingException {
+    public boolean ipRestriction(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
         String ipBlackListJson = consulApi.getSingleKVForKey("IpBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();

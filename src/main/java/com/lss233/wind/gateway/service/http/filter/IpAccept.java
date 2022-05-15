@@ -35,7 +35,7 @@ public class IpAccept extends Filter implements PreHttpFilter {
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
             try {
-                if (IpAccept(request)) {
+                if (ipAccept(request)) {
                     LOG.info("IP limit {}", ctx);
                     ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
                 }
@@ -45,7 +45,7 @@ public class IpAccept extends Filter implements PreHttpFilter {
         }
     }
 
-    public boolean IpAccept(HttpRequest request) throws JsonProcessingException {
+    public boolean ipAccept(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
         String ipWhiteListJson = consulApi.getSingleKVForKey("iPWhiteList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();

@@ -34,7 +34,7 @@ public class UaRestriction extends Filter implements PreHttpFilter {
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
             try {
-                if(!UaRestriction(request)) {
+                if(!uaRestriction(request)) {
                     LOG.info("Rate limit {} exceed!", ctx);
                     ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
                 }
@@ -45,7 +45,7 @@ public class UaRestriction extends Filter implements PreHttpFilter {
 
     }
 
-    public boolean UaRestriction (HttpRequest request) throws JsonProcessingException {
+    public boolean uaRestriction (HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
         String UaBlackListJson = consulApi.getSingleKVForKey("UaBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();
