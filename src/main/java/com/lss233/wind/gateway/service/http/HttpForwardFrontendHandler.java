@@ -77,8 +77,8 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
     // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
         for (HttpRoute route : HttpRouteCache.getHttpRoutes()) {
-            for (MatchRule matchRule : route.getMatchRuleList()) {
-                if(matchRule.isMatch(req)) {
+            for (PathMatch pathMatch : route.getPathMatch()) {
+                if(pathMatch.isMatch(req)) {
                     return route;
                 }
             }

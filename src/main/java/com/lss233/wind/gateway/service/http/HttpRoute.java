@@ -13,7 +13,9 @@ public class HttpRoute extends Route implements Serializable {
 
     private List<String> host;
     private List<String> path;
-    private List<MatchRule> matchRuleList;
+
+    List<PathMatch> pathMatch;
+    List<DomainMatch> DomainMath;
 
     public HttpRoute() {
     }
@@ -34,11 +36,19 @@ public class HttpRoute extends Route implements Serializable {
         this.path = path;
     }
 
-    public List<MatchRule> getMatchRuleList() {
-        return matchRuleList;
+    public List<PathMatch> getPathMatch() {
+        return pathMatch;
     }
 
-    public void setMatchRuleList(List<MatchRule> matchRuleList) {
-        this.matchRuleList = matchRuleList;
+    public void setPathMatch(List<PathMatch> pathMatch) {
+        this.pathMatch = pathMatch;
+    }
+
+    public List<DomainMatch> getDomainMath() {
+        return DomainMath;
+    }
+
+    public void setDomainMath(List<DomainMatch> domainMath) {
+        DomainMath = domainMath;
     }
 }

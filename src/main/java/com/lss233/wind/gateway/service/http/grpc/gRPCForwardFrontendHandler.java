@@ -83,6 +83,7 @@ public class gRPCForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
         endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
         endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+        endpoints.add(new Upstream.Destination("192.168.1.5", 9000, 1, true));
 
         Upstream upstream = new Upstream();
         upstream.setName("test upstream");

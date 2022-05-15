@@ -19,8 +19,13 @@ public class FilterRegistry {
         LOG.info("Initializing Filter Registry...");
 
         filterMap.put("IpAccept", IpAccept.class);
+        filterMap.put("CORS", CORS.class);
+        filterMap.put("RewriteHeadersFilter", RewriteHeadersFilter.class);
         filterMap.put("FlowLimiter", FlowLimitFilter.class);
         filterMap.put("UriBlocker", UriBlocker.class);
+        filterMap.put("IpRestriction", IpRestriction.class);
+        filterMap.put("RefererRestriction", RefererRestriction.class);
+        filterMap.put("UaRestriction", UaRestriction.class);
     }
     public Class<? extends Filter> getRegistry(String key) {
         return filterMap.get(key);

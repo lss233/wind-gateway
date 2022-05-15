@@ -7,7 +7,7 @@ import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lss233.wind.gateway.common.Upstream;
-import com.lss233.wind.gateway.service.consul.entity.UpstreamConvert;
+import com.lss233.wind.gateway.service.consul.Utils.UpstreamConvert;
 
 import java.util.ArrayList;
 import java.util.Arrays;

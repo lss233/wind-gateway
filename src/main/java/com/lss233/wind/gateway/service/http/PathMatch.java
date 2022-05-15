@@ -13,8 +13,6 @@ public class PathMatch {
 
     private String value;
 
-    List<PathMatch> pathMatch;
-
     public String getValue() {
         return value;
     }
@@ -24,6 +22,10 @@ public class PathMatch {
     }
 
     boolean isMatch(HttpRequest request) {
-        return request.uri().matches(getValue());
+
+        if (request.headers().get("path").matches(getValue())) {
+            return true;
+        }
+        return false;
     }
 }
