@@ -39,6 +39,13 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
             }
             LOG.debug("Accept client request from context {} with {}", ctx, request);
             route = parseRoute(request);
+            if(route == null) {
+                // 都匹配不到，滚！
+                ctx.write(new DefaultFullHttpResponse(
+                        HttpVersion.HTTP_1_1,
+                        HttpResponseStatus.NOT_FOUND)).addListener(ChannelFutureListener.CLOSE);
+                return;
+            }
         }
         // 执行路由过滤器
         if(route != null) {
@@ -77,36 +84,43 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
     // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
         for (HttpRoute route : HttpRouteCache.getHttpRoutes()) {
-            for (PathMatch pathMatch : route.getPathMatch()) {
-                if(pathMatch.isMatch(req)) {
-                    return route;
+            if(route.getPathMatch().size() > 0) {
+                if(route.getPathMatch().stream().anyMatch(i -> i.isMatch(req))) {
+                    continue;
                 }
             }
+            if(route.getDomainMath().size() > 0) {
+                if(route.getDomainMath().stream().anyMatch(i -> i.isMatch(req))) {
+                    continue;
+                }
+            }
+            return route;
         }
+        return null;
 
-        List<Upstream.Destination> endpoints = new ArrayList<>();
-        endpoints.add(new Upstream.Destination("192.168.1.5", 8080, 1, true));
-
-        Upstream upstream = new Upstream();
-        upstream.setName("test upstream");
-        upstream.setConnectTimeout(5000);
-        upstream.setEndpoints(endpoints);
-//        upstream.setScheme(new HttpsScheme());
-        upstream.setScheme(new HttpScheme());
-        upstream.SetLoadBalancerClass(RandomLoadBalancer.class);
-
-        HttpRoute route = new HttpRoute();
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter())); //限流
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction())); //IP拦截
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction())); //Referer拦截
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction())); // User-Agent拦截
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));  //Uri拦截
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpAccept()));  //IP允许
-        route.setName("test");
-        route.setPublish(true);
-        route.setUpstream(upstream);
-        return route;
+//        List<Upstream.Destination> endpoints = new ArrayList<>();
+//        endpoints.add(new Upstream.Destination("192.168.1.5", 8080, 1, true));
+//
+//        Upstream upstream = new Upstream();
+//        upstream.setName("test upstream");
+//        upstream.setConnectTimeout(5000);
+//        upstream.setEndpoints(endpoints);
+////        upstream.setScheme(new HttpsScheme());
+//        upstream.setScheme(new HttpScheme());
+//        upstream.SetLoadBalancerClass(RandomLoadBalancer.class);
+//
+//        HttpRoute route = new HttpRoute();
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter())); //限流
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction())); //IP拦截
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction())); //Referer拦截
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction())); // User-Agent拦截
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));  //Uri拦截
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpAccept()));  //IP允许
+//        route.setName("test");
+//        route.setPublish(true);
+//        route.setUpstream(upstream);
+//        return route;
     }
 
     @Override

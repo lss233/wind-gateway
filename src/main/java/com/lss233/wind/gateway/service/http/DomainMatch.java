@@ -8,8 +8,6 @@ public class DomainMatch {
 
     private String value;
 
-    List<DomainMatch> DomainMath;
-
     public String getValue() {
         return value;
     }
