@@ -1,11 +1,7 @@
 package com.lss233.wind.gateway.service.http;
 
 import com.lss233.wind.gateway.common.Filter;
-import com.lss233.wind.gateway.common.Upstream;
-import com.lss233.wind.gateway.common.lb.RandomLoadBalancer;
 import com.lss233.wind.gateway.service.consul.Cache.HttpRouteCache;
-import com.lss233.wind.gateway.service.consul.Cache.UpstreamCache;
-import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.service.http.filter.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -15,13 +11,10 @@ import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final Logger LOG = LoggerFactory.getLogger(HttpForwardFrontendHandler.class);
+    private static final Logger REQUEST_LOGGER = LoggerFactory.getLogger("HttpForwarderFrontend");
     private static final String CRLF = "\r\n";
     private HttpRequest request;
     private HttpRoute route;
@@ -41,11 +34,24 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
             route = parseRoute(request);
             if(route == null) {
                 // 都匹配不到，滚！
-                ctx.write(new DefaultFullHttpResponse(
+                ctx.writeAndFlush(new DefaultFullHttpResponse(
                         HttpVersion.HTTP_1_1,
                         HttpResponseStatus.NOT_FOUND)).addListener(ChannelFutureListener.CLOSE);
+                REQUEST_LOGGER.info("{} - \"-\" {} {} \"{}\" \"{}\"",
+                        ctx.channel().remoteAddress(),
+                        request.protocolVersion(),
+                        request.method(),
+                        request.uri(),
+                        request.headers().get("User-Agent"));
                 return;
             }
+            REQUEST_LOGGER.info("{} - \"{}\" {} {} \"{}\" \"{}\"",
+                    ctx.channel().remoteAddress(),
+                    route.getName(),
+                    request.protocolVersion(),
+                    request.method(),
+                    request.uri(),
+                    request.headers().get("User-Agent"));
         }
         // 执行路由过滤器
         if(route != null) {
@@ -59,21 +65,21 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
                 }
             }
         }
-        if(msg instanceof HttpRequest) {
-            if (client == null) {
-                client = HttpClient.builder()
-                        .upstream(route.getUpstream())
-                        .build();
-                client.getChannel().pipeline().addLast(new HttpForwardBackendHandler(ctx, request, route, client));
-                client.getChannel().writeAndFlush(request);
-                client.getChannel().writeAndFlush(CRLF);
-                client.getChannel().writeAndFlush(CRLF);
-            }
+        if (client == null && route != null) {
+            client = HttpClient.builder()
+                    .upstream(route.getUpstream())
+                    .build();
+            client.getChannel().pipeline().addLast(new HttpForwardBackendHandler(ctx, request, route, client));
+            client.getChannel().writeAndFlush(request);
+            client.getChannel().writeAndFlush(CRLF);
+            client.getChannel().writeAndFlush(CRLF);
         }
 
         if(msg instanceof HttpContent) {
             HttpContent content = (HttpContent) msg;
-            client.getChannel().writeAndFlush(content);
+            if(client != null) {
+                client.getChannel().writeAndFlush(content);
+            }
             LOG.debug("Receive client content from context {} with {}", ctx, content);
             if (msg instanceof LastHttpContent) {
                 // TODO(lss233): 客户端发送了最后一条消息
@@ -81,16 +87,15 @@ public class HttpForwardFrontendHandler extends SimpleChannelInboundHandler<Http
         }
     }
 
-    // TODO 以下只是用于测试的数据
     private HttpRoute parseRoute(HttpRequest req) throws Exception {
         for (HttpRoute route : HttpRouteCache.getHttpRoutes()) {
             if(route.getPathMatch().size() > 0) {
-                if(route.getPathMatch().stream().anyMatch(i -> i.isMatch(req))) {
+                if(route.getPathMatch().stream().noneMatch(i -> i.isMatch(req))) {
                     continue;
                 }
             }
-            if(route.getDomainMath().size() > 0) {
-                if(route.getDomainMath().stream().anyMatch(i -> i.isMatch(req))) {
+            if(route.getDomainMatch().size() > 0) {
+                if(route.getDomainMatch().stream().noneMatch(i -> i.isMatch(req))) {
                     continue;
                 }
             }

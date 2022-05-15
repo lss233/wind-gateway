@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 public class HttpForwardBackendHandler extends SimpleChannelInboundHandler<HttpObject> {
     private static final Logger LOG = LoggerFactory.getLogger(HttpForwardBackendHandler.class);
+    private static final Logger REQUEST_LOGGER = LoggerFactory.getLogger("HttpForwarderBackend");
+
     private ChannelHandlerContext ctxClientSide;
     private HttpRequest request;
     private HttpRoute route;
@@ -41,6 +43,13 @@ public class HttpForwardBackendHandler extends SimpleChannelInboundHandler<HttpO
         if(msg instanceof HttpResponse) {
             LOG.debug("Receive upstream response from ctx {} to client {} with response {}", ctxServerSide, ctxClientSide, msg);
             HttpResponse response = (HttpResponse) msg;
+            REQUEST_LOGGER.info("{} - \"{}\" {} \"{}\" {}",
+                    ctxClientSide.channel().remoteAddress(),
+                    route.getName(),
+                    response.protocolVersion(),
+                    response.status().code(),
+                    ctxServerSide.channel().remoteAddress()
+            );
             ctxClientSide.channel().write(response);
         }
         if(msg instanceof HttpContent) {
