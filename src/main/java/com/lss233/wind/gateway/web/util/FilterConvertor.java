@@ -2,6 +2,7 @@ package com.lss233.wind.gateway.web.util;
 
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.http.HttpRoute;
+import com.lss233.wind.gateway.service.http.HttpServer;
 import com.lss233.wind.gateway.service.http.filter.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +38,7 @@ public class FilterConvertor {
      */
     public static Filter toPlugin(Filter filter) throws ReflectiveOperationException {
         String pluginName = filter.getName();
-        filter = new FilterRegistry().getRegistry(pluginName).getConstructor(String.class).newInstance(pluginName);
+        filter = HttpServer.getFilterRegistry().getRegistry(pluginName).getConstructor(String.class).newInstance(pluginName);
         return filter;
     }
 
@@ -48,7 +49,6 @@ public class FilterConvertor {
      * @return
      */
     public static Filter toPlugin(Filter filter, Filter plugin) {
-        plugin.setName(filter.getName());
         plugin.setConfiguration(filter.getConfiguration());
         plugin.setEnable(filter.isEnable());
         return plugin;
