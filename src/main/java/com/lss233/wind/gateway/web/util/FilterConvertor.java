@@ -17,6 +17,9 @@ public class FilterConvertor {
 
     public static void setPlugin(HttpRoute route) {
         List<Filter> filterList = route.getFilters();
+        if (filterList == null) {
+            return;
+        }
         List<Filter> newFilterList = new ArrayList<>();
         for (Filter filter : filterList) {
             String pluginName = filter.getName();
