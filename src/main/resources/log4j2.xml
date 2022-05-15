@@ -13,7 +13,7 @@
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
             </Policies>
-            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n"/>
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%logger] %C{2} (%F:%L) - %m%n"/>
         </RollingFile>
     </Appenders>
 
@@ -22,7 +22,7 @@
             <AppenderRef ref="STDOUT_BANNER"/>
             <AppenderRef ref="FILE"/>
         </Logger>
-        <Root level="all">
+        <Root level="INFO">
             <AppenderRef ref="STDOUT"/>
             <AppenderRef ref="FILE"/>
         </Root>
