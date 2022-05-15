@@ -13,7 +13,6 @@ import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
 import io.netty.util.internal.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +32,9 @@ public class RouteServiceImpl implements RouteService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return MyResult.fail(ResultEnum.ERROR);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return MyResult.fail(ResultEnum.ERROR.getCode(),"插件启用错误",null);
         }
         return MyResult.success(httpRoute);
     }

@@ -4,6 +4,7 @@ import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.service.http.filter.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 public class FilterConvertor {
 
-    public static void setPlugin(HttpRoute route) {
+    public static void setPlugin(HttpRoute route) throws ReflectiveOperationException {
         List<Filter> filterList = route.getFilters();
         if (filterList == null) {
             return;
@@ -34,19 +35,9 @@ public class FilterConvertor {
      * @param filter
      * @return
      */
-    public static Filter toPlugin(Filter filter) {
+    public static Filter toPlugin(Filter filter) throws ReflectiveOperationException {
         String pluginName = filter.getName();
-        switch (pluginName) {
-            case "CORS": filter = toPlugin(filter, new CORS(pluginName)); break;
-            case "FlowLimitFilter": filter = toPlugin(filter, new FlowLimitFilter(pluginName)) ; break;
-            case "IpAccept":filter = toPlugin(filter, new IpAccept(pluginName)); break;
-            case "IpRestriction":filter = toPlugin(filter, new IpRestriction(pluginName)); break;
-            case "RefererRestriction":filter = toPlugin(filter, new RefererRestriction(pluginName)); break;
-            case "RewriteHeadersFilter":filter = toPlugin(filter, new RewriteHeadersFilter(pluginName)); break;
-            case "UaRestriction":filter = toPlugin(filter, new UaRestriction(pluginName)); break;
-            case "UriBlocker":filter = toPlugin(filter, new UriBlocker(pluginName)); break;
-            default:return filter;
-        }
+        filter = new FilterRegistry().getRegistry(pluginName).getConstructor(String.class).newInstance(pluginName);
         return filter;
     }
 

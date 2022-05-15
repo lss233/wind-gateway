@@ -45,7 +45,6 @@ public class ServiceImpl implements Service {
         Response<List<HealthService>> listResponse = consulApi.CheckServicesHealthy(serviceName);
         System.out.println(listResponse);
         List<HealthService> healthServices = listResponse.getValue();
-        Gson gson = new Gson();
         HealthService.Service service = healthServices.get(0).getService();
         return MyResult.success(service);
     }
