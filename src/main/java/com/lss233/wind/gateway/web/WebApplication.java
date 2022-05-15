@@ -56,7 +56,7 @@ public class WebApplication {
                 put("/update", RouteController::setRoute, AccessURL.ADMIN);
                 get("/getRoute/{routeName}", RouteController::getRoute, AccessURL.ADMIN);
                 get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
-                delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
+                put("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
                 put("/online", RouteController::online, AccessURL.ADMIN);
                 post("/search", RouteController::search, AccessURL.ADMIN);
             });
@@ -65,13 +65,16 @@ public class WebApplication {
                 put("/update", UpstreamController::setUpstream, AccessURL.ADMIN);
                 get("/getUpstream/{upstreamName}", UpstreamController::getUpstream, AccessURL.ADMIN);
                 get("/getUpstream", UpstreamController::getUpstreams, AccessURL.ADMIN);
-                delete("/deleteUpstream", UpstreamController::deleteUpstream, AccessURL.ADMIN);
+                put("/deleteUpstream", UpstreamController::deleteUpstream, AccessURL.ADMIN);
                 post("/search", UpstreamController::search, AccessURL.ADMIN);
             });
             path("service", () -> {
                 post("/register", ServiceController::registerService, AccessURL.ADMIN);
+                put("/updateService", ServiceController::updateService, AccessURL.ADMIN);
                 get("/getService/{serviceName}", ServiceController::getService, AccessURL.ADMIN);
-                delete("/deleteService", ServiceController::deregister, AccessURL.ADMIN);
+                get("/getServices", ServiceController::getServices, AccessURL.ADMIN);
+                put("/deleteService", ServiceController::deregister, AccessURL.ADMIN);
+                post("/search", ServiceController::search, AccessURL.ADMIN);
             });
         });
     }

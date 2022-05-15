@@ -41,10 +41,9 @@ public interface RouteService {
 
     /**
      * 设置路由的上下线
-     * @param isPublish 是否上线
      * @return
      */
-    MyResult onOrOffline(String routeName, boolean isPublish);
+    MyResult onOrOffline(String routeName);
 
     /**
      * 通过路由名关键词和路径关键词搜索符合条件的路由

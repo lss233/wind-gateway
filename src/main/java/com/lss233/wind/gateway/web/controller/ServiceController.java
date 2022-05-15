@@ -19,14 +19,28 @@ public class ServiceController {
         context.json(service.registerService(newService));
     }
 
+    public static void updateService(Context context) {
+        NewService newService = context.bodyAsClass(NewService.class);
+        context.json(service.updateService(newService));
+    }
+
     public static void getService(Context context) throws JsonProcessingException {
         String serviceName = context.pathParam("serviceName");
         System.out.println(serviceName);
         context.json(service.getService(serviceName));
     }
 
+    public static void getServices(Context context) {
+        context.json(service.getServices());
+    }
+
     public static void deregister(Context context) {
         String serviceName = context.formParam("serviceName");
         context.json(service.deleteService(serviceName));
+    }
+
+    public static void search(Context context) {
+        String serviceName = context.formParam("serviceName");
+        context.json(service.search(serviceName));
     }
 }

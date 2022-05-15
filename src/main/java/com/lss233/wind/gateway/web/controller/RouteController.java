@@ -7,15 +7,17 @@ import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
 import com.lss233.wind.gateway.web.util.MyResult;
 import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
+
 
 
 /**
  * @author zzl
  * @date 2022/4/29 22:41
  */
-
+@Slf4j
 public class RouteController {
 
     public static RouteService routeService = new RouteServiceImpl();
@@ -60,9 +62,8 @@ public class RouteController {
      */
     public static void online(Context context) {
         String routeName = context.formParam("routeName");
-        boolean isPublish = Boolean.parseBoolean(context.formParam("isPublish"));
 
-        context.json(routeService.onOrOffline(routeName, isPublish));
+        context.json(routeService.onOrOffline(routeName));
     }
 
     public static void search(Context context) {
