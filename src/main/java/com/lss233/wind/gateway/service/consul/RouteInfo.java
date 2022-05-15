@@ -32,7 +32,7 @@ public class RouteInfo {
             // json 转数组对象
             httpRoutes = mapper.readValue(valueResponse, HttpRoute[].class);
         }catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return new ArrayList<>();
         }
         return new ArrayList<>(Arrays.asList(httpRoutes));

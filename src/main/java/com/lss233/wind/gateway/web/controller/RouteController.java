@@ -1,16 +1,12 @@
 package com.lss233.wind.gateway.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.lss233.wind.gateway.common.Scheme;
+import com.lss233.wind.gateway.common.SchemeRegistry;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.service.RouteService;
 import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
-import com.lss233.wind.gateway.web.util.MyResult;
-import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Objects;
-
 
 
 /**
@@ -26,8 +22,11 @@ public class RouteController {
      * 配置路由，如果存在则修改，不存在创建
      * @param context
      */
-    public static void setRoute(Context context) {
+    public static void setRoute(Context context) throws InstantiationException, IllegalAccessException {
         HttpRoute httpRoute = context.bodyAsClass(HttpRoute.class);
+        Class<? extends Scheme> schemeClass = SchemeRegistry.getInstance().getRegistry(context.formParam("scheme"));
+        Scheme scheme = schemeClass.newInstance();
+        System.out.println(scheme.getName());
         context.json(routeService.setRoute(httpRoute));
     }
 

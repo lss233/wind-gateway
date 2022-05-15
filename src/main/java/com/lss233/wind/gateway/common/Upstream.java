@@ -1,5 +1,6 @@
 package com.lss233.wind.gateway.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -51,6 +52,7 @@ public class Upstream implements Serializable {
     /**
      * 协议
      */
+    @JsonIgnore
     protected Scheme scheme;
     /**
      * 负载均衡算法
