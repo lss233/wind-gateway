@@ -16,7 +16,7 @@ public class DomainMatch {
         this.value = value;
     }
 
-    boolean isMatch(HttpRequest request) {
+    public boolean isMatch(HttpRequest request) {
         return getValue().equalsIgnoreCase(request.headers().get("Host"));
     }
 }

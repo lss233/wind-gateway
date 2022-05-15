@@ -34,7 +34,7 @@ public class UriBlocker extends Filter implements PreHttpFilter{
         if(msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
             try {
-                if(!UriBlock(request)) {
+                if(!uriBlock(request)) {
                     LOG.info("Rate limit {} exceed!", ctx);
                     ctx.writeAndFlush(RESPONSE).addListener(ChannelFutureListener.CLOSE);
                 }
@@ -44,7 +44,7 @@ public class UriBlocker extends Filter implements PreHttpFilter{
         }
 
     }
-    public boolean UriBlock(HttpRequest request) throws JsonProcessingException {
+    public boolean uriBlock(HttpRequest request) throws JsonProcessingException {
         ConsulApi consulApi = new ConsulApi();
         String uriBlackListJson = consulApi.getSingleKVForKey("UriBlackList" + getRoute().getName());
         ObjectMapper objectMapper = new ObjectMapper();

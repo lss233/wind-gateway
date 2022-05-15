@@ -1,6 +1,7 @@
 package com.lss233.wind.gateway.web.util;
 
 import com.lss233.wind.gateway.common.Filter;
+import com.lss233.wind.gateway.common.FilterRegistry;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.service.http.HttpServer;
 import com.lss233.wind.gateway.service.http.filter.*;
