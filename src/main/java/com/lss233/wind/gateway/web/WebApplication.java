@@ -58,7 +58,7 @@ public class WebApplication {
                 get("/getRoute", RouteController::getAllRoute, AccessURL.ADMIN);
                 delete("/deleteRoute", RouteController::deleteRoute, AccessURL.ADMIN);
                 put("/online", RouteController::online, AccessURL.ADMIN);
-                get("/search", RouteController::search, AccessURL.ADMIN);
+                post("/search", RouteController::search, AccessURL.ADMIN);
             });
             path("upstream", () -> {
                 post("/setUpstream", UpstreamController::setUpstream, AccessURL.ADMIN);
@@ -66,7 +66,7 @@ public class WebApplication {
                 get("/getUpstream/{upstreamName}", UpstreamController::getUpstream, AccessURL.ADMIN);
                 get("/getUpstream", UpstreamController::getUpstreams, AccessURL.ADMIN);
                 delete("/deleteUpstream", UpstreamController::deleteUpstream, AccessURL.ADMIN);
-                get("/search", UpstreamController::search, AccessURL.ADMIN);
+                post("/search", UpstreamController::search, AccessURL.ADMIN);
             });
             path("service", () -> {
                 post("/register", ServiceController::registerService, AccessURL.ADMIN);
