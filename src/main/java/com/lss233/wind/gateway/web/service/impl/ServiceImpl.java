@@ -12,6 +12,7 @@ import com.lss233.wind.gateway.web.util.ResultEnum;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zzl
@@ -51,11 +52,11 @@ public class ServiceImpl implements Service {
 
     @Override
     public MyResult getServices() {
-        List<com.ecwid.consul.v1.agent.model.Service> services = consulApi.getServices();
-        if (services == null) {
+        Map<String, com.ecwid.consul.v1.agent.model.Service> serviceList = consulApi.getServiceList();
+        if (serviceList == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        return MyResult.success(services);
+        return MyResult.success(serviceList);
     }
 
     @Override

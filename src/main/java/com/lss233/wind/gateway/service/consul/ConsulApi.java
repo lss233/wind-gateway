@@ -159,4 +159,9 @@ public class ConsulApi {
         return serviceMap;
     }
 
+    public void deregisterService(String serviceName) {
+        HealthService.Service service = CheckServicesHealthy(serviceName).getValue().get(0).getService();
+        client.agentServiceDeregister(service.getId());
+    }
+
 }

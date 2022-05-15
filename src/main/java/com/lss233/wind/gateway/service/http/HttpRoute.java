@@ -11,26 +11,26 @@ public class HttpRoute extends Route implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private String host;
-    private String path;
+    private List<String> host;
+    private List<String> path;
     private List<MatchRule> matchRuleList;
 
     public HttpRoute() {
     }
 
-    public String getHost() {
+    public List<String> getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(List<String> host) {
         this.host = host;
     }
 
-    public String getPath() {
+    public List<String> getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public void setPath(List<String> path) {
         this.path = path;
     }
 
