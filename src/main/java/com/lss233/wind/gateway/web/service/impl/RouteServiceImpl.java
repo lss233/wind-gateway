@@ -1,10 +1,13 @@
 package com.lss233.wind.gateway.web.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.consul.RouteInfo;
 import com.lss233.wind.gateway.service.http.HttpRoute;
 import com.lss233.wind.gateway.web.dao.RouteConsulDao;
+import com.lss233.wind.gateway.web.service.PluginService;
 import com.lss233.wind.gateway.web.service.RouteService;
+import com.lss233.wind.gateway.web.util.FilterConvertor;
 import com.lss233.wind.gateway.web.util.MyResult;
 import com.lss233.wind.gateway.web.util.ResultEnum;
 import io.javalin.http.Context;
@@ -25,6 +28,7 @@ public class RouteServiceImpl implements RouteService {
             return MyResult.fail(ResultEnum.ERROR.getCode(),"路由配置失败，路由信息不可为null", null);
         }
         try {
+            FilterConvertor.setPlugin(httpRoute);
             RouteInfo.setRoute(httpRoute);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

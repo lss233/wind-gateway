@@ -154,8 +154,21 @@ public class RouteInfo {
     public static List<HttpRoute> searchByNameAndPath(String routeName, String path) throws JsonProcessingException {
         List<HttpRoute> httpRoutes = getRoute();
         List<HttpRoute> targetList = new ArrayList<>();
+        if (routeName == null) {
+            routeName = "";
+        }
+        if (path == null) {
+            path = "";
+        }
         for (HttpRoute httpRoute : httpRoutes) {
-            if (httpRoute.getName().contains(routeName) && httpRoute.getPath().contains(path)) {
+            boolean flag = false;
+            for (String s : httpRoute.getPath()) {
+                if(s.contains(path)){
+                    flag = true;
+                    break;
+                }
+            }
+            if (httpRoute.getName().contains(routeName) && flag) {
                 targetList.add(httpRoute);
             }
         }
