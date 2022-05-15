@@ -34,7 +34,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public MyResult updateService(NewService newService) {
-        return null;
+        return registerService(newService);
     }
 
     @Override
@@ -53,10 +53,14 @@ public class ServiceImpl implements Service {
     @Override
     public MyResult getServices() {
         Map<String, com.ecwid.consul.v1.agent.model.Service> serviceList = consulApi.getServiceList();
+        List<com.ecwid.consul.v1.agent.model.Service> services = new ArrayList<>();
         if (serviceList == null) {
             return MyResult.fail(ResultEnum.NOT_FOUND);
         }
-        return MyResult.success(serviceList);
+        serviceList.forEach((k,v) -> {
+            services.add(v);
+        });
+        return MyResult.success(services);
     }
 
     @Override
@@ -71,8 +75,19 @@ public class ServiceImpl implements Service {
 
     @Override
     public MyResult search(String serviceName) {
-        List<Service> services = new ArrayList<>();
-
-        return null;
+        if (serviceName == null) {
+            serviceName = "";
+        }
+        List<com.ecwid.consul.v1.agent.model.Service> services = (List<com.ecwid.consul.v1.agent.model.Service>) getServices().getData();
+        if (services.isEmpty()) {
+            return MyResult.fail(ResultEnum.NOT_FOUND);
+        }
+        List<com.ecwid.consul.v1.agent.model.Service> serviceList = new ArrayList<>();
+        for (com.ecwid.consul.v1.agent.model.Service service : services) {
+            if (service.getService().contains(serviceName)) {
+                serviceList.add(service);
+            }
+        }
+        return MyResult.success(serviceList);
     }
 }
