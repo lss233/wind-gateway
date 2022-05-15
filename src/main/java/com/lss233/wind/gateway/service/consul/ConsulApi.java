@@ -4,12 +4,17 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.agent.model.NewService;
+import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.lss233.wind.gateway.common.config.ReadConfiguration;
+import com.lss233.wind.gateway.service.consul.Utils.UpstreamConvert;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -150,5 +155,16 @@ public class ConsulApi {
     }
 
 
-}
+    /**
+     * 获取所有服务列表
+     */
+    public Map<String, Service> getServiceList() {
 
+        Response<Map<String, Service>> res = client.getAgentServices();
+        // 结果集
+        Map<String,Service> serviceMap = new HashMap<>();
+        serviceMap.putAll(res.getValue());
+        return serviceMap;
+    }
+
+}
