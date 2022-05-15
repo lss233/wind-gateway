@@ -1,13 +1,11 @@
 package com.lss233.wind.gateway.web.util;
 
 import com.lss233.wind.gateway.common.Filter;
+import com.lss233.wind.gateway.common.FilterRegistry;
 import com.lss233.wind.gateway.service.http.HttpRoute;
-import com.lss233.wind.gateway.service.http.filter.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zzl
@@ -36,17 +34,8 @@ public class FilterConvertor {
      */
     public static Filter toPlugin(Filter filter) {
         String pluginName = filter.getName();
-        switch (pluginName) {
-            case "CORS": filter = toPlugin(filter, new CORS(pluginName)); break;
-            case "FlowLimitFilter": filter = toPlugin(filter, new FlowLimitFilter(pluginName)) ; break;
-            case "IpAccept":filter = toPlugin(filter, new IpAccept(pluginName)); break;
-            case "IpRestriction":filter = toPlugin(filter, new IpRestriction(pluginName)); break;
-            case "RefererRestriction":filter = toPlugin(filter, new RefererRestriction(pluginName)); break;
-            case "RewriteHeadersFilter":filter = toPlugin(filter, new RewriteHeadersFilter(pluginName)); break;
-            case "UaRestriction":filter = toPlugin(filter, new UaRestriction(pluginName)); break;
-            case "UriBlocker":filter = toPlugin(filter, new UriBlocker(pluginName)); break;
-            default:return filter;
-        }
+        FilterRegistry filterRegistry = new FilterRegistry();
+        filterRegistry.getRegistry(filter.getName()).newInstance();
         return filter;
     }
 
