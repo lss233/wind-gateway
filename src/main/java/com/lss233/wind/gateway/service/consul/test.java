@@ -19,9 +19,12 @@ import java.util.Map;
  * Data: 2022/5/1 15:25
  * Version 1.0
  **/
+
 public class test {
     public static void main(String[] args) throws JsonProcessingException {
 
+
+        /*
         Upstream upstream = new Upstream();
 
         upstream.setDescription("test");
@@ -33,6 +36,8 @@ public class test {
 
 
         UpstreamInfo.setUpstreamList(upstreams);
+        */
+
 
         System.out.println("===========================================================================");
 
