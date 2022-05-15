@@ -9,9 +9,6 @@ import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.lss233.wind.gateway.common.config.ReadConfiguration;
-import com.lss233.wind.gateway.service.consul.Utils.UpstreamConvert;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +38,6 @@ public class ConsulApi {
 
     /**
      * 获取密钥的单个 KV (根据key获取value)
-     * @param  Key
      * @return Response<GetValue>
      */
     public String getSingleKVForKey(String Key){
@@ -61,7 +57,6 @@ public class ConsulApi {
 
     /**
      * 删除 key 对应的数值
-     * @param key
      * @return Response<Void>
      */
     public Response<Void> deleteKVValues(String key) {
@@ -70,16 +65,14 @@ public class ConsulApi {
 
     /**
      * (递归)获取键前缀的 KV 列表 (根据key获取value,类似搜索功能，返回前缀所有符合条件的列表)
-     * @param keyPrefix
      * @return Response<List<GetValue>>
      */
     public Response<List<GetValue>> getPrefixKVsList(String keyPrefix){
         // (递归)获取键前缀的 KV 列表
-        Response<List<GetValue>> keyValuesResponse = client.getKVValues(keyPrefix);
         // TODO 这里测试格式使用，上线后注释掉
         // keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
         // prints "com.my.app.foo: foo" and "com.my.app.bar: bar"
-        return keyValuesResponse;
+        return client.getKVValues(keyPrefix);
     }
 
 
@@ -120,7 +113,6 @@ public class ConsulApi {
 
     /**
      * 根据名称查询健康服务
-     * @param serviceName
      * @return Response<List<HealthService>>
      */
     public Response<List<HealthService>> CheckServicesHealthy(String serviceName){
