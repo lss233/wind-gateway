@@ -9,8 +9,7 @@ import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.lss233.wind.gateway.common.config.ReadConfiguration;
-
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ public class ConsulApi {
 
     /**
      * 获取密钥的单个 KV (根据key获取value)
-     * @param  Key
      * @return Response<GetValue>
      */
     public String getSingleKVForKey(String Key){
@@ -59,7 +57,6 @@ public class ConsulApi {
 
     /**
      * 删除 key 对应的数值
-     * @param key
      * @return Response<Void>
      */
     public Response<Void> deleteKVValues(String key) {
@@ -68,16 +65,14 @@ public class ConsulApi {
 
     /**
      * (递归)获取键前缀的 KV 列表 (根据key获取value,类似搜索功能，返回前缀所有符合条件的列表)
-     * @param keyPrefix
      * @return Response<List<GetValue>>
      */
     public Response<List<GetValue>> getPrefixKVsList(String keyPrefix){
         // (递归)获取键前缀的 KV 列表
-        Response<List<GetValue>> keyValuesResponse = client.getKVValues(keyPrefix);
         // TODO 这里测试格式使用，上线后注释掉
         // keyValuesResponse.getValue().forEach(value -> System.out.println(value.getKey() + ": " + value.getDecodedValue()));
         // prints "com.my.app.foo: foo" and "com.my.app.bar: bar"
-        return keyValuesResponse;
+        return client.getKVValues(keyPrefix);
     }
 
 
@@ -118,7 +113,6 @@ public class ConsulApi {
 
     /**
      * 根据名称查询健康服务
-     * @param serviceName
      * @return Response<List<HealthService>>
      */
     public Response<List<HealthService>> CheckServicesHealthy(String serviceName){
@@ -144,8 +138,6 @@ public class ConsulApi {
          */
     }
 
-
-
     /**
      * 获取节点状态信息
      * @return Response<List<String>>
@@ -154,30 +146,17 @@ public class ConsulApi {
         return client.getStatusPeers();
     }
 
-    public List<Service> getServices() {
-        Response<Map<String, Service>> agentServices = client.getAgentServices();
-        if (agentServices == null) {
-            return null;
-        }
-        List<Service> services = new ArrayList<>();
-        for(Map.Entry<String, Service> entry:agentServices.getValue().entrySet()){
-            System.out.println(entry.getKey()+"--->"+entry.getValue());
-            services.add(entry.getValue());
-        }
-        return services;
+
+    /**
+     * 获取所有服务列表
+     */
+    public Map<String, Service> getServiceList() {
+
+        Response<Map<String, Service>> res = client.getAgentServices();
+        // 结果集
+        Map<String,Service> serviceMap = new HashMap<>();
+        serviceMap.putAll(res.getValue());
+        return serviceMap;
     }
 
-    public void deregisterService(String serviceName) {
-        HealthService.Service service = CheckServicesHealthy(serviceName).getValue().get(0).getService();
-        client.agentServiceDeregister(service.getId());
-    }
-
-    public List<Service> search(String serviceName) {
-        List<Service> services = getServices();
-        for (Service service : services) {
-//            if (service.getService())
-        }
-        return null;
-    }
 }
-
