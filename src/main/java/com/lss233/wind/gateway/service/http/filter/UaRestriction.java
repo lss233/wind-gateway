@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
+import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author : yjp
@@ -46,11 +45,7 @@ public class UaRestriction extends Filter implements PreHttpFilter {
     }
 
     public boolean uaRestriction (HttpRequest request) throws JsonProcessingException {
-        ConsulApi consulApi = new ConsulApi();
-        String UaBlackListJson = consulApi.getSingleKVForKey("UaBlackList" + getRoute().getName());
-        ObjectMapper objectMapper = new ObjectMapper();
-        String[] list = objectMapper.readValue(UaBlackListJson, String[].class);
-        UaBlackList = new ArrayList<>(Arrays.asList(list));
+
         String ua = request.headers().get("User-Agent");
         if (ua == null || UaBlackList.contains(ua)) {
             return false;
@@ -58,12 +53,16 @@ public class UaRestriction extends Filter implements PreHttpFilter {
         return true;
     }
 
-    public List UaBlackListAdd(String Ua) throws JsonProcessingException {
-        UaBlackList.add(Ua);
-        ConsulApi consulApi = new ConsulApi();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String UaBlackListJson = objectMapper.writeValueAsString(UaBlackList);
-        consulApi.setKVValue("UaBlackList-" + getRoute().getName(), UaBlackListJson);
+    public List UaBlackListAdd(String routeName) throws JsonProcessingException {
+        List<Filter> filters = new RouteServiceImpl().getRoute(routeName).getData().getFilters();
+        Map<Object, Object> map = new HashMap<>();
+        for (Filter filter : filters) {
+            if (filter.getConfiguration().get("name").equals("UaRestriction")) {
+                map = filter.getConfiguration();
+                break;
+            }
+        }
+        UaBlackList = (List<String>) map.get("blacklist");
         return UaBlackList;
     }
 }

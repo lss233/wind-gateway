@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
+import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -46,11 +45,7 @@ public class IpAccept extends Filter implements PreHttpFilter {
     }
 
     public boolean ipAccept(HttpRequest request) throws JsonProcessingException {
-        ConsulApi consulApi = new ConsulApi();
-        String ipWhiteListJson = consulApi.getSingleKVForKey("iPWhiteList" + getRoute().getName());
-        ObjectMapper objectMapper = new ObjectMapper();
-        String[] list = objectMapper.readValue(ipWhiteListJson, String[].class);
-        iPWhiteList = new ArrayList<>(Arrays.asList(list));
+
         String ip = request.headers().get("LocalAddr");
         if (ip != null && iPWhiteList.contains(ip)) {
             return true;
@@ -58,12 +53,16 @@ public class IpAccept extends Filter implements PreHttpFilter {
         return false;
     }
 
-    public List<String> IPWhiteListAdd(String IP) throws JsonProcessingException {
-        iPWhiteList.add(IP);
-        ConsulApi consulApi = new ConsulApi();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String ipWhiteListJson = objectMapper.writeValueAsString(iPWhiteList);
-        consulApi.setKVValue("iPWhiteList" + getRoute().getName(), ipWhiteListJson);
+    public List<String> IPWhiteListAdd(String routeName) throws JsonProcessingException {
+        List<Filter> filters = new RouteServiceImpl().getRoute(routeName).getData().getFilters();
+        Map<Object, Object> map = new HashMap<>();
+        for (Filter filter : filters) {
+            if (filter.getConfiguration().get("name").equals("IpAccept")) {
+                map = filter.getConfiguration();
+                break;
+            }
+        }
+        iPWhiteList = (List<String>) map.get("blacklist");
         return iPWhiteList;
     }
 }

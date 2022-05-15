@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
+import com.lss233.wind.gateway.web.service.impl.RouteServiceImpl;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author : yjp
@@ -44,11 +43,6 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
     }
 
     public boolean refererRestriction(HttpRequest request) throws JsonProcessingException {
-        ConsulApi consulApi = new ConsulApi();
-        String refererBlackListJson = consulApi.getSingleKVForKey("RefererBlackList" + getRoute().getName());
-        ObjectMapper objectMapper = new ObjectMapper();
-        String[] list = objectMapper.readValue(refererBlackListJson, String[].class);
-        RefererBlackList = new ArrayList<>(Arrays.asList(list));
         String referer = request.headers().get("Referer");
         LOG.debug(referer);
         for (String regexp : RefererBlackList) {
@@ -60,12 +54,17 @@ public class RefererRestriction extends Filter implements PreHttpFilter{
         return true;
     }
 
-    public List<String> RefererBlackListAdd(String referer) throws JsonProcessingException {
-        RefererBlackList.add(referer);
-        ConsulApi consulApi = new ConsulApi();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String RefererBlackListJson = objectMapper.writeValueAsString(RefererBlackList);
-        consulApi.setKVValue("RefererBlackList" + getRoute().getName(), RefererBlackListJson);
+    public List<String> RefererBlackListAdd(String routeName) throws JsonProcessingException {
+        List<Filter> filters = new RouteServiceImpl().getRoute(routeName).getData().getFilters();
+        Map<Object, Object> map = new HashMap<>();
+        for (Filter filter : filters) {
+            if (filter.getConfiguration().get("name").equals("RefererRestriction")) {
+                map = filter.getConfiguration();
+                break;
+            }
+        }
+        RefererBlackList = (List<String>) map.get("blacklist");
+
         return RefererBlackList;
     }
 }
