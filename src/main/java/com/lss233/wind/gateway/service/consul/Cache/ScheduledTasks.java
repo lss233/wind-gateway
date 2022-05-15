@@ -29,7 +29,7 @@ public class ScheduledTasks implements Runnable{
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            LOG.info("Update Cache");
+            LOG.debug("Update Cache");
             try {
                 Thread.sleep(100 * 50);
             } catch (InterruptedException e) {

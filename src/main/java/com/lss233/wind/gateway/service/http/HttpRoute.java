@@ -1,5 +1,4 @@
 package com.lss233.wind.gateway.service.http;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lss233.wind.gateway.common.Route;
 
@@ -15,7 +14,7 @@ public class HttpRoute extends Route implements Serializable {
     private List<String> path;
 
     List<PathMatch> pathMatch;
-    List<DomainMatch> DomainMath;
+    List<DomainMatch> domainMatch;
 
     public HttpRoute() {
     }
@@ -44,11 +43,11 @@ public class HttpRoute extends Route implements Serializable {
         this.pathMatch = pathMatch;
     }
 
-    public List<DomainMatch> getDomainMath() {
-        return DomainMath;
+    public List<DomainMatch> getDomainMatch() {
+        return domainMatch;
     }
 
-    public void setDomainMath(List<DomainMatch> domainMath) {
-        DomainMath = domainMath;
+    public void setDomainMatch(List<DomainMatch> domainMatch) {
+        this.domainMatch = domainMatch;
     }
 }

@@ -9,11 +9,17 @@ import java.util.Set;
 public abstract class Registry<T>{
     protected final Map<String, Class<? extends T>> registries = new HashMap<>();
     public abstract void init();
-    public abstract Class<? extends T> getRegistry(String key);
+    public Class<? extends T> getRegistry(String key) {
+        return registries.get(key);
+    }
 
-    public abstract Set<String> getKeys();
+    public Set<String> getKeys() {
+        return registries.keySet();
+    }
 
-    public abstract void addRegistry(String key, Class<? extends T> filter);
+    public void addRegistry(String key, Class<? extends T> filter) {
+        registries.put(key, filter);
+    }
 
 
 }

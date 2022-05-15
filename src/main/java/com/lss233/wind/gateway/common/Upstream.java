@@ -1,6 +1,7 @@
 package com.lss233.wind.gateway.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -54,10 +55,11 @@ public class Upstream implements Serializable {
     /**
      * 负载均衡算法
      */
-    @JsonIgnore
+    @JsonDeserialize(converter = LoadBalancerDeserializer.class)
+    @JsonSerialize(converter = LoadBalancerSerializer.class)
     protected Class<? extends LoadBalancer> loadBalancerClass;
 
-    private transient LoadBalancer loadBalancer;
+    private LoadBalancer loadBalancer;
 
     public static class Destination {
         /**
@@ -200,6 +202,7 @@ public class Upstream implements Serializable {
      * 由于反序列化必须使用标准的get set，所以需要添加方法，请勿使用
      * @param loadBalancer
      */
+    @Deprecated
     public void setLoadBalancer(LoadBalancer loadBalancer) {
         this.loadBalancer = loadBalancer;
     }
@@ -209,7 +212,12 @@ public class Upstream implements Serializable {
      * @param loadBalancerClass
      */
     public void setLoadBalancerClass(Class<? extends LoadBalancer> loadBalancerClass) {
-        this.loadBalancerClass = loadBalancerClass;
+//        this.loadBalancerClass = loadBalancerClass;
+        try {
+            SetLoadBalancerClass(loadBalancerClass);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public void SetLoadBalancerClass(Class<? extends LoadBalancer> loadBalancerClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
