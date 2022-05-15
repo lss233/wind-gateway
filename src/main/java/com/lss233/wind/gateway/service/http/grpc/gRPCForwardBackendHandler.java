@@ -19,10 +19,10 @@ public class gRPCForwardBackendHandler extends SimpleChannelInboundHandler<HttpO
     private static final Logger LOG = LoggerFactory.getLogger(gRPCForwardBackendHandler.class);
     private ChannelHandlerContext ctxClientSide;
     private HttpRequest request;
-    private gRPCRoute route;
+    private HttpRoute route;
     private gRPCClient client;
     private boolean isClosed = false;
-    public gRPCForwardBackendHandler(ChannelHandlerContext ctx, HttpRequest req, gRPCRoute route, gRPCClient client) {
+    public gRPCForwardBackendHandler(ChannelHandlerContext ctx, HttpRequest req, HttpRoute route, gRPCClient client) {
         this.ctxClientSide = ctx;
         this.request = req;
         this.route = route;

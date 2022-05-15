@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.service.http.grpc;
 import com.lss233.wind.gateway.common.Filter;
 import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.common.lb.RandomLoadBalancer;
+import com.lss233.wind.gateway.service.consul.Cache.HttpRouteCache;
 import com.lss233.wind.gateway.service.http.*;
 import com.lss233.wind.gateway.service.http.filter.PreHttpFilter;
 import com.lss233.wind.gateway.service.http.filter.RewriteHeadersFilter;
@@ -28,7 +29,7 @@ public class gRPCForwardFrontendHandler extends SimpleChannelInboundHandler<Http
     private static final Logger LOG = LoggerFactory.getLogger(gRPCForwardFrontendHandler.class);
     private static final String CRLF = "\r\n";
     private HttpRequest request;
-    private gRPCRoute route;
+    private HttpRoute route;
     private gRPCClient client;
     private boolean isClosed = false;
     @Override
@@ -78,31 +79,45 @@ public class gRPCForwardFrontendHandler extends SimpleChannelInboundHandler<Http
     }
 
     // TODO 以下只是用于测试的数据
-    private gRPCRoute parseRoute(HttpRequest req) throws Exception {
-        List<Upstream.Destination> endpoints = new ArrayList<>();
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
-        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
-        endpoints.add(new Upstream.Destination("192.168.1.5", 9000, 1, true));
-
-        Upstream upstream = new Upstream();
-        upstream.setName("test upstream");
-        upstream.setConnectTimeout(5000);
-        upstream.setEndpoints(endpoints);
-        upstream.setScheme(new HttpsScheme());
-        upstream.setLoadBalancerClass(RandomLoadBalancer.class);
-
-        gRPCRoute route = new gRPCRoute();
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction()));
-//        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));
-        route.setName("test");
-        route.setPublish(true);
-        route.setUpstream(upstream);
-        return route;
+    private HttpRoute parseRoute(HttpRequest req) throws Exception {
+        for (HttpRoute route : HttpRouteCache.getHttpRoutes()) {
+            if(route.getPathMatch().size() > 0) {
+                if(route.getPathMatch().stream().anyMatch(i -> i.isMatch(req))) {
+                    continue;
+                }
+            }
+            if(route.getDomainMath().size() > 0) {
+                if(route.getDomainMath().stream().anyMatch(i -> i.isMatch(req))) {
+                    continue;
+                }
+            }
+            return route;
+        }
+        return null;
+//        List<Upstream.Destination> endpoints = new ArrayList<>();
+//        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+//        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+//        endpoints.add(new Upstream.Destination("www.baidu.com", 443, 1, true));
+//        endpoints.add(new Upstream.Destination("192.168.1.5", 9000, 1, true));
+//
+//        Upstream upstream = new Upstream();
+//        upstream.setName("test upstream");
+//        upstream.setConnectTimeout(5000);
+//        upstream.setEndpoints(endpoints);
+//        upstream.setScheme(new HttpsScheme());
+//        upstream.setLoadBalancerClass(RandomLoadBalancer.class);
+//
+//        gRPCRoute route = new gRPCRoute();
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new FlowLimitFilter()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new IpRestriction()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new RefererRestriction()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UaRestriction()));
+////        route.setFilters(Arrays.asList(new RewriteHeadersFilter(), new UriBlocker()));
+//        route.setName("test");
+//        route.setPublish(true);
+//        route.setUpstream(upstream);
+//        return route;
     }
 
     @Override
