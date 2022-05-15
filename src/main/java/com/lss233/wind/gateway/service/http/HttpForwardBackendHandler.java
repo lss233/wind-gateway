@@ -43,12 +43,14 @@ public class HttpForwardBackendHandler extends SimpleChannelInboundHandler<HttpO
         if(msg instanceof HttpResponse) {
             LOG.debug("Receive upstream response from ctx {} to client {} with response {}", ctxServerSide, ctxClientSide, msg);
             HttpResponse response = (HttpResponse) msg;
-            REQUEST_LOGGER.info("{} - \"{}\" {} \"{}\" {}",
+            REQUEST_LOGGER.info("{} - \"{}\" {} {} {} {} \"{}\"",
                     ctxClientSide.channel().remoteAddress(),
                     route.getName(),
                     response.protocolVersion(),
                     response.status().code(),
-                    ctxServerSide.channel().remoteAddress()
+                    ctxServerSide.channel().remoteAddress(),
+                    request.method(),
+                    request.uri()
             );
             ctxClientSide.channel().write(response);
         }

@@ -86,8 +86,8 @@ public class gRPCForwardFrontendHandler extends SimpleChannelInboundHandler<Http
                     continue;
                 }
             }
-            if(route.getDomainMath().size() > 0) {
-                if(route.getDomainMath().stream().anyMatch(i -> i.isMatch(req))) {
+            if(route.getDomainMatch().size() > 0) {
+                if(route.getDomainMatch().stream().anyMatch(i -> i.isMatch(req))) {
                     continue;
                 }
             }
