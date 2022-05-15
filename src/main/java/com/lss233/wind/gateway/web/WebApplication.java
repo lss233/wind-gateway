@@ -3,6 +3,7 @@ package com.lss233.wind.gateway.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lss233.wind.gateway.common.Upstream;
+import com.lss233.wind.gateway.common.config.ReadConfiguration;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
 import com.lss233.wind.gateway.service.consul.UpstreamInfo;
 import com.lss233.wind.gateway.web.controller.RouteController;
@@ -45,7 +46,7 @@ public class WebApplication {
 
 
         //服务api
-        Javalin app = Javalin.create(config -> config.accessManager(new ApiAccessManager())).start(7000);
+        Javalin app = Javalin.create(config -> config.accessManager(new ApiAccessManager())).start(ReadConfiguration.Config.getWebServicePort());
         app.routes(() -> {
             path("user", () -> {
 //                post("register", UserController::register, AccessURL.ANYONE);

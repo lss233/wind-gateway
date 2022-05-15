@@ -23,13 +23,19 @@ public class ConfigEntity {
      */
     private Integer servicePort = 80;
 
+    /**
+     * web配置面板服务端口
+     */
+    private Integer webServicePort = 7000;
+
     public ConfigEntity() {
     }
 
-    public ConfigEntity(String consulURL, Integer consulPort, Integer servicePort) {
+    public ConfigEntity(String consulURL, Integer consulPort, Integer servicePort, Integer webServicePort) {
         this.consulURL = consulURL;
         this.consulPort = consulPort;
         this.servicePort = servicePort;
+        this.webServicePort = webServicePort;
     }
 
     public String getConsulURL() {
@@ -56,12 +62,21 @@ public class ConfigEntity {
         this.servicePort = servicePort;
     }
 
+    public Integer getWebServicePort() {
+        return webServicePort;
+    }
+
+    public void setWebServicePort(Integer webServicePort) {
+        this.webServicePort = webServicePort;
+    }
+
     @Override
     public String toString() {
         return "ConfigEntity{" +
                 "consulURL=" + consulURL +
                 ", ServicePort='" + servicePort + '\'' +
                 ", consulPort='" + consulPort + '\'' +
+                ", webServicePort='" + webServicePort + '\'' +
                 '}';
     }
 }

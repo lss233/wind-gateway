@@ -38,9 +38,8 @@ public class ReadConfiguration {
             ReadConfiguration.Config = configEntityList.get(0);
             logger.info(">>>>>>Config:{}", ReadConfiguration.Config);
         } catch(Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
             logger.info("Config NotFound Use Default Config:{}",ReadConfiguration.Config);
+            throw new RuntimeException(ex);
         }
     }
 }

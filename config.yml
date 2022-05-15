@@ -8,3 +8,4 @@ consulURL: localhost
 consulPort: 8500
 
 # Web控制面板端口
+webServicePort: 7000
