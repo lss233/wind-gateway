@@ -11,17 +11,17 @@ public class ConfigEntity {
     /**
      * Consul 数据中心地址
      */
-    private String consulURL;
+    private String consulURL = "localhost";
 
     /**
      * Consul 端口
      */
-    private Integer consulPort;
+    private Integer consulPort = 8500;
 
     /**
      * 服务端口号
      */
-    private Integer servicePort;
+    private Integer servicePort = 80;
 
     public ConfigEntity() {
     }

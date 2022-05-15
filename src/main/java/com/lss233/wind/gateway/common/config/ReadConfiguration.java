@@ -19,10 +19,12 @@ import java.util.List;
 
 public class ReadConfiguration {
 
-    public static ConfigEntity Config;
+    public static ConfigEntity Config = new ConfigEntity();
+
     private static final Logger logger = LoggerFactory.getLogger(ReadConfiguration.class);
 
     public void readYamlConfiguration() {
+
         try {
             File f = new File("./config.yml");
             InputStream test = Files.newInputStream(f.toPath());
@@ -37,9 +39,8 @@ public class ReadConfiguration {
             logger.info(">>>>>>Config:{}", ReadConfiguration.Config);
         } catch(Exception ex) {
             throw new RuntimeException(ex);
+        } finally {
+            logger.info("Config NotFound Use Default Config:{}",ReadConfiguration.Config);
         }
     }
-
-
-
 }

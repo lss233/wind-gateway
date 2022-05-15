@@ -42,8 +42,6 @@ public class RouteInfo {
 
     /**
      * 将List<HttpRoute> 序列化并存储到consul中
-     * @param routeList
-     * @throws JsonProcessingException
      */
     public static void setRouteList(List<HttpRoute> routeList) throws JsonProcessingException {
         //序列化
@@ -59,9 +57,6 @@ public class RouteInfo {
 
     /**
      * 通过路由名称获取单个路由
-     * @param routeName
-     * @return
-     * @throws JsonProcessingException
      */
     public static HttpRoute getRoute(String routeName) throws JsonProcessingException {
 
@@ -121,8 +116,6 @@ public class RouteInfo {
      * 删除单个路由信息
      * 若返回值true则代表存在并且删除成功
      * 若返回false则表示不存在该路由信息
-     * @param routeName
-     * @throws JsonProcessingException
      */
     public static boolean delRoute(String routeName) throws JsonProcessingException {
 
@@ -132,7 +125,7 @@ public class RouteInfo {
         // 待更新的结果集
         List<HttpRoute> updateRouteList = new ArrayList<>();
         HttpRoute httpRoute = getRoute(routeName);
-        if (httpRoute == null){
+        if (httpRoute == null || routeList == null){
             // 若不存在，返回false
             return false;
 

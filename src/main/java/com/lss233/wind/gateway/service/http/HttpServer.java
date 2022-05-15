@@ -28,8 +28,13 @@ public class HttpServer {
 
         LOG.info("Loading settings...");
         // 读取配置信息
-        ReadConfiguration readConfiguration = new ReadConfiguration();
-        readConfiguration.readYamlConfiguration();
+
+        try {
+            ReadConfiguration readConfiguration = new ReadConfiguration();
+            readConfiguration.readYamlConfiguration();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         // 读取数据
         Runnable runnable = new ScheduledTasks();
