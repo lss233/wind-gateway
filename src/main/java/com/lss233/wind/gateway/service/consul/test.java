@@ -7,7 +7,7 @@ import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lss233.wind.gateway.common.Upstream;
-import com.lss233.wind.gateway.service.consul.entity.UpstreamConvert;
+import com.lss233.wind.gateway.service.consul.Utils.UpstreamConvert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +19,12 @@ import java.util.Map;
  * Data: 2022/5/1 15:25
  * Version 1.0
  **/
+
 public class test {
     public static void main(String[] args) throws JsonProcessingException {
 
+
+        /*
         Upstream upstream = new Upstream();
 
         upstream.setDescription("test");
@@ -33,6 +36,8 @@ public class test {
 
 
         UpstreamInfo.setUpstreamList(upstreams);
+        */
+
 
         System.out.println("===========================================================================");
 
