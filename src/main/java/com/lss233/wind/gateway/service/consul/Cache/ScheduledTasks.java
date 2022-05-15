@@ -24,7 +24,8 @@ public class ScheduledTasks implements Runnable{
 
                 HttpRouteCache.updateCache();
                 UpstreamCache.updateCache();
-                MatchRuleCache.updateCache();
+                DomainMatchCache.updateCache();
+                PathMatchCache.updateCache();
 
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
