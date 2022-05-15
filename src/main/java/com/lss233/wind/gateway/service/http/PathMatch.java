@@ -22,10 +22,6 @@ public class PathMatch {
     }
 
     boolean isMatch(HttpRequest request) {
-
-        if (request.headers().get("path").matches(getValue())) {
-            return true;
-        }
-        return false;
+        return request.uri().matches(getValue());
     }
 }

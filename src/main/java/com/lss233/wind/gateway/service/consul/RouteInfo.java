@@ -6,10 +6,7 @@ import com.lss233.wind.gateway.service.http.HttpRoute;
 import io.netty.util.internal.StringUtil;
 import lombok.SneakyThrows;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Author: icebigpig
@@ -35,7 +32,8 @@ public class RouteInfo {
             // json 转数组对象
             httpRoutes = mapper.readValue(valueResponse, HttpRoute[].class);
         }catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            return new ArrayList<>();
         }
         return new ArrayList<>(Arrays.asList(httpRoutes));
     }
