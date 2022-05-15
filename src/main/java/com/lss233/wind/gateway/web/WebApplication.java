@@ -6,6 +6,7 @@ import com.lss233.wind.gateway.common.Upstream;
 import com.lss233.wind.gateway.service.consul.ConsulApi;
 import com.lss233.wind.gateway.service.consul.UpstreamInfo;
 import com.lss233.wind.gateway.web.controller.RouteController;
+import com.lss233.wind.gateway.web.controller.ServiceController;
 import com.lss233.wind.gateway.web.controller.UpstreamController;
 import com.lss233.wind.gateway.web.controller.UserController;
 import com.lss233.wind.gateway.web.entity.AccessURL;
@@ -24,8 +25,9 @@ import static io.javalin.apibuilder.ApiBuilder.*;
  */
 public class WebApplication {
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void webService() throws JsonProcessingException {
 
+        System.out.println("web");
         //存入管理员到consul
         User admin = new User();
         admin.setUsername("admin");
@@ -65,6 +67,11 @@ public class WebApplication {
                 get("/getUpstream", UpstreamController::getUpstreams, AccessURL.ADMIN);
                 delete("/deleteUpstream", UpstreamController::deleteUpstream, AccessURL.ADMIN);
                 get("/search", UpstreamController::search, AccessURL.ADMIN);
+            });
+            path("service", () -> {
+                post("/register", ServiceController::registerService, AccessURL.ADMIN);
+                get("/getService/{serviceName}", ServiceController::getService, AccessURL.ADMIN);
+                delete("/deleteService", ServiceController::deregister, AccessURL.ADMIN);
             });
         });
     }

@@ -11,6 +11,7 @@ public class Filter {
     public Filter(String name) {
         this.name = name;
     }
+    public Filter(){}
 
     public Route getRoute() {
         return route;

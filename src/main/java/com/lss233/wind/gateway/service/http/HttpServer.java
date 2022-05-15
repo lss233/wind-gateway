@@ -4,6 +4,7 @@ import com.lss233.wind.gateway.common.config.ReadConfiguration;
 import com.lss233.wind.gateway.common.type.Service;
 import com.lss233.wind.gateway.service.consul.Cache.ScheduledTasks;
 import com.lss233.wind.gateway.service.http.filter.FilterRegistry;
+import com.lss233.wind.gateway.web.WebApplication;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -36,6 +37,7 @@ public class HttpServer {
         // 启动线程定时任务刷新到缓存
         thread.start();
 
+        WebApplication.webService();
         LOG.info("Starting...");
         // 启动服务器
         ServerBootstrap bootstrap = new ServerBootstrap();

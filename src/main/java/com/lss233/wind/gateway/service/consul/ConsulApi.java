@@ -4,12 +4,15 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.agent.model.NewService;
+import com.ecwid.consul.v1.agent.model.Service;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.lss233.wind.gateway.common.config.ReadConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -141,6 +144,8 @@ public class ConsulApi {
          */
     }
 
+
+
     /**
      * 获取节点状态信息
      * @return Response<List<String>>
@@ -149,6 +154,30 @@ public class ConsulApi {
         return client.getStatusPeers();
     }
 
+    public List<Service> getServices() {
+        Response<Map<String, Service>> agentServices = client.getAgentServices();
+        if (agentServices == null) {
+            return null;
+        }
+        List<Service> services = new ArrayList<>();
+        for(Map.Entry<String, Service> entry:agentServices.getValue().entrySet()){
+            System.out.println(entry.getKey()+"--->"+entry.getValue());
+            services.add(entry.getValue());
+        }
+        return services;
+    }
 
+    public void deregisterService(String serviceName) {
+        HealthService.Service service = CheckServicesHealthy(serviceName).getValue().get(0).getService();
+        client.agentServiceDeregister(service.getId());
+    }
+
+    public List<Service> search(String serviceName) {
+        List<Service> services = getServices();
+        for (Service service : services) {
+//            if (service.getService())
+        }
+        return null;
+    }
 }
 
